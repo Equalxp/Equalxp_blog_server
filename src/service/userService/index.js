@@ -1,8 +1,14 @@
+const User = require("../../model/user/user")
+
 class UserService {
-  async add(user) {
-    const sq = "INSERT INTO user (name,password) VALUES(?,?);"
-    return true
+  async createUser(user) {
+    const { username, password, nick_name, role, avatar } = user
+    const res = await User.create({ username, password, nick_name, role, avatar })
+
+    return res.dataValues
   }
+
+  async findUser(username) { }
 }
 
-export default UserService
+module.exports = new UserService()
