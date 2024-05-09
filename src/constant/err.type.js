@@ -29,6 +29,21 @@ module.exports = {
     message: "密码不匹配",
     result: "",
   },
+  differentPassword: {
+    code: "10007",
+    message: "两次输入密码不一致",
+    result: "",
+  },
+  userUpdatePasswordError: {
+    code: "10008",
+    message: "用户修改失败",
+    result: "",
+  },
+  adminUpdateRoleError: {
+    code: "10008",
+    message: "角色修改失败",
+    result: "",
+  },
   tokenExpiredError: {
     code: "10101",
     message: "token已过期",
@@ -39,49 +54,39 @@ module.exports = {
     message: "无效的token",
     result: "",
   },
-  hasNotAdminPermission: {
+  invalidUserId: {
     code: "10103",
+    message: "无效的用户id",
+    result: "",
+  },
+  existUsername: {
+    code: "10104",
+    message: "此用户名已被注册",
+    result: "",
+  },
+  hasNotAdminPermission: {
+    code: "10105",
     message: "没有管理员权限",
     result: "",
   },
-  fileUploadError: {
+  hasNotPermission: {
+    code: "10106",
+    message: "您没有权限访问",
+    result: "",
+  },
+  tagNameNotEmpty: {
     code: "10201",
-    message: "商品图片上传失败",
+    message: "标签名称不能为空",
     result: "",
   },
-  unSupportedFileType: {
+  tagExisted: {
     code: "10202",
-    message: "不支持的文件格式",
+    message: "标签已存在",
     result: "",
   },
-  goodsFormatError: {
+  tagAddError: {
     code: "10203",
-    message: "商品参数格式错误",
+    message: "标签新增失败",
     result: "",
   },
-  publishGoodsError: {
-    code: "10204",
-    message: "发布商品失败",
-    result: "",
-  },
-  invalidGoodsID: {
-    code: "10205",
-    message: "无效的商品id",
-    result: "",
-  },
-  cartFormatError: {
-    code: "10301",
-    message: "购物车数据格式错误",
-    result: "",
-  },
-  addrFormatError: {
-    code: "10401",
-    message: "地址数据格式错误",
-    result: "",
-  },
-  orderFormatError: {
-    code: "10501",
-    message: "订单数据格式错误",
-    result: "",
-  },
-};
+}

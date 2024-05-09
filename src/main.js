@@ -6,7 +6,8 @@ const onerror = require("koa-onerror")
 const bodyparser = require("koa-bodyparser")
 const logger = require("koa-logger")
 const router = require("./router")
-const errorHandler = require('./app/errorHandler')
+const errorHandler = require("./app/errorHandler")
+const parameter = require("koa-parameter")
 
 // error handler
 onerror(app)
@@ -39,6 +40,9 @@ app.use(async (ctx, next) => {
 
 // router
 app.use(router.routes()).use(router.allowedMethods())
+
+// parameter
+app.use(parameter(app))
 
 // error-handling
 app.on("error", errorHandler)

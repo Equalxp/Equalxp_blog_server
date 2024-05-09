@@ -1,12 +1,21 @@
-const Router = require("koa-router");
-const router = new Router({ prefix: "/user" });
+const Router = require("koa-router")
+const router = new Router({ prefix: "/user" })
 
-const { login, register } = require("../controller/user");
+const { login, register, updateOwnUserInfo, updatePassword, updateRole } = require("../controller/user")
 
-const { userValidate, verifyUser, crpyPassword, verifyLogin } = require("../middleware/user/index");
+const { userValidate, verifyUser, crpyPassword, verifyLogin, verifyUpdatePassword } = require("../middleware/user/index")
 
-router.post("/login", userValidate, verifyLogin, login); // 用户登陆
-router.post("/register", userValidate, verifyUser, crpyPassword, register); // 用户注册
-router.post("update"); // 修改用户
+const { auth, adminAuth } = require("../middleware/auth/index")
 
-module.exports = router;
+// 用户注册
+router.post("/register", userValidate, verifyUser, crpyPassword, register)
+// 用户登陆
+router.post("/login", userValidate, verifyLogin, login)
+// 用户修改个人用户信息
+router.put("/updateOwnUserInfo", auth, updateOwnUserInfo)
+// 修改密码
+router.put("/updatePassword", auth, verifyUpdatePassword, updatePassword)
+// 管理员修改用户角色
+router.put("/updateRole/:id/:role", auth, adminAuth, updateRole)
+
+module.exports = router

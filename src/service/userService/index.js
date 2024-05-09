@@ -1,12 +1,53 @@
-const User = require("../../model/user/user");
-
+const User = require("../../model/user/user")
+const { randomNickname } = require("../../utils/tool")
+const bcrypt = require("bcryptjs") // 密码加盐加密
 class UserService {
   async createUser(user) {
-    const { username, password, nick_name, role, avatar } = user;
+    const { username, password } = user
+    let role, nick_name
+    if (username === "admin") {
+      role = 1
+    } else {
+      role = 0
+    }
+    nick_name = randomNickname("小白")
+    const res = await User.create({ username, password, nick_name, role })
 
-    const res = await User.create({ username, password, nick_name, role, avatar });
+    return res.dataValues
+  }
 
-    return res.dataValues;
+  /**
+   * 用户自己修改用户信息
+   * @param {*} id
+   * @param {*} user
+   * @returns
+   */
+  async updateOwnUserInfo(id, user) {
+    const { avatar, nick_name } = user
+    const res = await User.update({ avatar, nick_name }, { where: { id } })
+    return res[0] > 0 ? true : false
+  }
+
+  /**
+   * 修改用户密码
+   * @param {*} id
+   * @param {*} password
+   */
+  async updatePassword(id, password) {
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+    const res = await User.update({ password: hash }, { where: { id } })
+    return res[0] > 0 ? true : false
+  }
+
+  /**
+   * 修改用户角色
+   * @param {*} id
+   * @param {*} role
+   */
+  async updateRole(id, role) {
+    const res = await User.update({ role: role }, { where: { id } })
+    return res[0] > 0 ? true : false
   }
 
   /**
@@ -15,18 +56,18 @@ class UserService {
    * @returns Users
    */
   async getOneUserInfo({ id, username, password, role }) {
-    const whereOpt = {};
+    const whereOpt = {}
 
-    id && Object.assign(whereOpt, { id });
-    username && Object.assign(whereOpt, { username });
-    password && Object.assign(whereOpt, { password });
-    role && Object.assign(whereOpt, { role });
+    id && Object.assign(whereOpt, { id })
+    username && Object.assign(whereOpt, { username })
+    password && Object.assign(whereOpt, { password })
+    role && Object.assign(whereOpt, { role })
     const res = await User.findOne({
       attributes: ["id", "username", "password", "role"],
       where: whereOpt,
-    });
-    return res ? res.dataValues : null;
+    })
+    return res ? res.dataValues : null
   }
 }
 
-module.exports = new UserService();
+module.exports = new UserService()
