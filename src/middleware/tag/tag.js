@@ -1,4 +1,4 @@
-const { tagExisted, tagNameNotEmpty } = require("../../constant/err.type")
+const { tagExisted, tagNameNotEmpty, tagListIsNull } = require("../../constant/err.type")
 
 const { getOneTag } = require("../../service/tag/index")
 
@@ -8,7 +8,8 @@ const verifyTag = async (ctx, next) => {
     console.error("标签名称不能为空")
     return ctx.app.emit("error", tagNameNotEmpty, ctx)
   }
-  if (getOneTag({ tag_name })) {
+  let res = await getOneTag({ tag_name })
+  if (res) {
     console.error("标签已存在")
     return ctx.app.emit("error", tagExisted, ctx)
   }
@@ -16,6 +17,17 @@ const verifyTag = async (ctx, next) => {
   await next()
 }
 
+const verifyDeleteTags = async (ctx, next) => {
+  const { tagIdList } = ctx.request.body
+  if (!tagIdList.length) {
+    console.error("标签id列表不能为空")
+    return ctx.app.emit("error", tagListIsNull, ctx)
+  }
+
+  await next()
+}
+
 module.exports = {
   verifyTag,
+  verifyDeleteTags,
 }

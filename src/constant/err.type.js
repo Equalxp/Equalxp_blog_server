@@ -74,6 +74,7 @@ module.exports = {
     message: "您没有权限访问",
     result: "",
   },
+  // 标签
   tagNameNotEmpty: {
     code: "10201",
     message: "标签名称不能为空",
@@ -81,12 +82,58 @@ module.exports = {
   },
   tagExisted: {
     code: "10202",
-    message: "标签已存在",
+    message: "标签名已存在，请换一个",
     result: "",
   },
   tagAddError: {
     code: "10203",
     message: "标签新增失败",
+    result: "",
+  },
+  tagUpdateError: {
+    code: "10204",
+    message: "标签修改失败",
+    result: "",
+  },
+  tagListIsNull: {
+    code: "10205",
+    message: "标签列表不能为空",
+    result: "",
+  },
+  tagsDeleteError: {
+    code: "10206",
+    message: "标签删除失败",
+    result: "",
+  },
+  // 分类
+  categoryNameNotEmpty: {
+    code: "10201",
+    message: "分类名称不能为空",
+    result: "",
+  },
+  categoryExisted: {
+    code: "10202",
+    message: "分类名已存在，请换一个",
+    result: "",
+  },
+  categoryAddError: {
+    code: "10203",
+    message: "分类新增失败",
+    result: "",
+  },
+  categoryUpdateError: {
+    code: "10204",
+    message: "分类修改失败",
+    result: "",
+  },
+  categoryListIsNull: {
+    code: "10205",
+    message: "分类列表不能为空",
+    result: "",
+  },
+  categoriesDeleteError: {
+    code: "10206",
+    message: "分类删除失败",
     result: "",
   },
 }

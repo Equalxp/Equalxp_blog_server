@@ -1,3 +1,4 @@
+const { Op } = require("sequelize")
 const Tag = require("../../model/tag/tag")
 /**
  * 标签服务层
@@ -6,14 +7,44 @@ class TagService {
   /**
    * 新增标签
    * @param {*} tag
-   * @return res
-   * @memberof TagService
+   * @returns Boolean
    */
   async createTag(tag) {
     const { tag_name } = tag
     const res = await Tag.create({ tag_name })
 
     return res.dataValues
+  }
+
+  /**
+ * 修改标签
+ * @param {*} tag
+ * @returns Boolean
+ */
+  async updateTag(tag) {
+    const { id, tag_name } = tag
+    const res = await Tag.update({ tag_name }, { where: { id } })
+
+    console.log(res)
+    return res[0] > 0 ? true : false
+  }
+
+  /**
+   * 删除标签
+   * @param {*} idList
+   * @returns 删除条数
+   */
+  async deleteTags(idList) {
+    const res = await Tag.destroy({
+      where: {
+        id: idList,
+        // id: {
+        //   [Op.in]: idList,
+        // },
+      },
+    })
+
+    return res
   }
 
   /**

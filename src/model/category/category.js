@@ -17,6 +17,6 @@ const Category = seq.define(
   }
 )
 
-Category.sync({ force: true }) //创建数据表
+// Category.sync({ force: true }) //创建数据表
 
 module.exports = Category
