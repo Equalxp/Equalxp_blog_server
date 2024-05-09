@@ -1,16 +1,12 @@
-/*
- * @Author: M
- * @Date: 2023-03-01 16:23:19
- * @Description: 用户路由
- * @LastEditTime: 2023-03-02 17:17:43
- * @LastEditors: M
- */
-const Router = require("koa-router")
+const Router = require("koa-router");
+const router = new Router({ prefix: "/user" });
 
-const router = new Router({ prefix: "/user" })
-const { login, register } = require("../controller/user")
+const { login, register } = require("../controller/user");
 
-router.post("/login", login)
-router.post("/register", register)
+const { userValidate, verifyUser, crpyPassword, verifyLogin } = require("../middleware/user/index");
 
-module.exports = router
+router.post("/login", userValidate, verifyLogin, login); // 用户登陆
+router.post("/register", userValidate, verifyUser, crpyPassword, register); // 用户注册
+router.post("update"); // 修改用户
+
+module.exports = router;
