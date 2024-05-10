@@ -21,7 +21,7 @@ class CategoryController {
         },
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", categoryAddError, ctx)
     }
   }
@@ -38,7 +38,7 @@ class CategoryController {
         result: res,
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", categoryUpdateError, ctx)
     }
   }
@@ -55,7 +55,7 @@ class CategoryController {
         },
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", categoriesDeleteError, ctx)
     }
   }

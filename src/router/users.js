@@ -1,7 +1,7 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/user" })
 
-const { login, register, updateOwnUserInfo, updatePassword, updateRole } = require("../controller/user")
+const { login, register, updateOwnUserInfo, updatePassword, updateRole, getUserList } = require("../controller/user")
 
 const { userValidate, verifyUser, crpyPassword, verifyLogin, verifyUpdatePassword } = require("../middleware/user/index")
 
@@ -17,5 +17,7 @@ router.put("/updateOwnUserInfo", auth, updateOwnUserInfo)
 router.put("/updatePassword", auth, verifyUpdatePassword, updatePassword)
 // 管理员修改用户角色
 router.put("/updateRole/:id/:role", auth, adminAuth, updateRole)
+// 分页获取用户列表
+router.post("/getUserList", getUserList)
 
 module.exports = router

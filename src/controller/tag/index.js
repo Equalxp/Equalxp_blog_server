@@ -21,7 +21,7 @@ class TagController {
         },
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", tagAddError, ctx)
     }
   }
@@ -38,7 +38,7 @@ class TagController {
         result: res,
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", tagUpdateError, ctx)
     }
   }
@@ -55,7 +55,7 @@ class TagController {
         },
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", tagsDeleteError, ctx)
     }
   }

@@ -136,4 +136,35 @@ module.exports = {
     message: "分类删除失败",
     result: "",
   },
+  // 文章
+  articleIdTagIdNotNull: {
+    code: "10301",
+    message: "文章id和标签id都不能为空",
+    result: "",
+  },
+  articleTagAddError: {
+    code: "10302",
+    message: "文章标签关联新增失败",
+    result: "",
+  },
+  articleTagDeleteError: {
+    code: "10303",
+    message: "文章标签关联删除失败",
+    result: "",
+  },
+  articleAddError: {
+    code: "10304",
+    message: "文章新增失败",
+    result: "",
+  },
+  articleUpdateError: {
+    code: "10305",
+    message: "文章修改失败",
+    result: "",
+  },
+  articleVerifyError: {
+    code: "10306",
+    message: "文章参数校验失败",
+    result: "",
+  },
 }

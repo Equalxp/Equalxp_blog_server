@@ -68,6 +68,39 @@ class UserService {
     })
     return res ? res.dataValues : null
   }
+
+  /**
+   * 分页查询用户列表
+   */
+  async getUserList({ current, size, nick_name, role }) {
+    const offset = (current - 1) * size
+    const limit = size * 1
+
+    const whereOpt = {}
+    nick_name &&
+      Object.assign(whereOpt, {
+        nick_name: {
+          [Op.like]: `%${nick_name}%`,
+        },
+      })
+    role && Object.assign(whereOpt, role)
+    const { count, rows } = await User.findAndCountAll(
+      {
+        offset,
+        limit,
+      },
+      {
+        where: whereOpt,
+      }
+    )
+
+    return {
+      current,
+      size,
+      total: count,
+      list: rows,
+    }
+  }
 }
 
 module.exports = new UserService()

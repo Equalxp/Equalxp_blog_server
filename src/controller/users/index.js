@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const { JWT_SECRET } = require("../../config/config.default")
-const { createUser, updateOwnUserInfo, getOneUserInfo, updatePassword, updateRole } = require("../../service/userService/index")
+const { createUser, updateOwnUserInfo, getOneUserInfo, updatePassword, updateRole, getUserList } = require("../../service/user/index")
 const { userRegisterError, invalidUserId, userUpdatePasswordError, adminUpdateRoleError } = require("../../constant/err.type")
 
 class userController {
@@ -20,7 +20,7 @@ class userController {
         },
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       ctx.app.emit("error", userRegisterError, ctx)
     }
   }
@@ -101,6 +101,23 @@ class userController {
       }
     } catch (err) {
       console.error("用户登陆失败", err)
+    }
+  }
+  /**
+ * 分页获取用户列表
+ */
+  async getUserList(ctx) {
+    try {
+      const { current, size, nick_name, role } = ctx.request.body
+      const res = await getUserList({ current, size, nick_name, role })
+      console.log(res)
+      ctx.body = {
+        code: 0,
+        message: "分页获取用户列表成功",
+        result: res,
+      }
+    } catch (err) {
+      console.error(err)
     }
   }
 }

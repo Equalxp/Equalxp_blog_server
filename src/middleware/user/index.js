@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs") // 密码加盐加密
 
-const { getOneUserInfo } = require("../../service/userService")
+const { getOneUserInfo } = require("../../service/user")
 
 const { userFormateError, userAlreadyExited, userRegisterError, userDoesNotExist, userLoginError, invalidPassword, differentPassword, userUpdatePasswordError } = require("../../constant/err.type")
 

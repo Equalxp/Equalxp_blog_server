@@ -2,9 +2,14 @@ const Router = require("koa-router")
 
 const router = new Router({ prefix: "/article" })
 
-const { createArticleTag } = require("../service/articleService/articleTag.js")
+const { createArticle, updateArticle } = require("../controller/article/index")
 
-// 测试文章标签关联 测试
-router.post("/add", createArticleTag)
+const { verifyParam, removeRepeatArticleTag } = require("../middleware/article/index")
+
+// 创建文章
+router.post("/add", verifyParam, createArticle)
+
+// 修改文章
+router.put("/update", verifyParam, removeRepeatArticleTag, updateArticle)
 
 module.exports = router
