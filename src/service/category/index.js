@@ -90,6 +90,15 @@ class CategoryService {
       list: rows,
     }
   }
+
+  // 获取分类数据字典
+  async getCategoryDictionary() {
+    let res = await Category.findAll({
+      attributes: ["id", "category_name"],
+    })
+
+    return res ? res : null
+  }
 }
 
 module.exports = new CategoryService()

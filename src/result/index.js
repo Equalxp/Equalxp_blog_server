@@ -4,6 +4,8 @@ const ERRORCODE = {
   TAG: "100003",
   CATEGORY: "100004",
   ARTICLE: "100005",
+  UPLOAD: "100006",
+  CONFIG: "100007",
 }
 
 /**

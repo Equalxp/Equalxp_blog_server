@@ -1,4 +1,4 @@
-const { createTag, updateTag, deleteTags, getTagList } = require("../../service/tag/index")
+const { createTag, updateTag, deleteTags, getTagList, getTagDictionary } = require("../../service/tag/index")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.TAG
@@ -62,6 +62,20 @@ class TagController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "分页查找标签失败"), ctx)
+    }
+  }
+
+  /**
+   * 获取标签字典
+   */
+  async getTagDictionary(ctx) {
+    try {
+      let res = await getTagDictionary()
+
+      ctx.body = result("获取标签字典成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取标签字典失败"), ctx)
     }
   }
 }

@@ -1,28 +1,33 @@
+const path = require("path")
+
 const Koa = require("koa")
 const app = new Koa()
 const views = require("koa-views")
 const json = require("koa-json")
 const onerror = require("koa-onerror")
-const bodyparser = require("koa-bodyparser")
 const logger = require("koa-logger")
+const parameter = require("koa-parameter")
+const { koaBody } = require("koa-body") // 新用法
 const router = require("./router")
 const errorHandler = require("./app/errorHandler")
-const parameter = require("koa-parameter")
 
 // error handler
 onerror(app)
 
 // middlewares
 app.use(
-  bodyparser({
-    multipart: true,
-    enableTypes: ["json", "form", "text"],
-    parsedMethods: ["POST", "PUT", "PATCH", "DELETE"],
+  koaBody({
+    multipart: true, // 支持文件上传
+    formidable: {
+      uploadDir: path.join(__dirname, "./upload"), // 设置文件上传目录
+      keepExtensions: true, // 保持文件的后缀
+      maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
+    },
   })
 )
 app.use(json())
 app.use(logger())
-app.use(require("koa-static")(__dirname + "/public"))
+app.use(require("koa-static")(path.join(__dirname, "./upload")))
 
 app.use(
   views(__dirname + "/views", {

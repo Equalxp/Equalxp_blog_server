@@ -1,4 +1,4 @@
-const { createCategory, updateCategory, deleteCategories, getCategoryList } = require("../../service/category/index")
+const { createCategory, updateCategory, deleteCategories, getCategoryList, getCategoryDictionary } = require("../../service/category/index")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.CATEGORY
@@ -62,6 +62,20 @@ class CategoryController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "分页查找分类失败"), ctx)
+    }
+  }
+
+  /**
+   * 获取分类字典
+   */
+  async getCategoryDictionary(ctx) {
+    try {
+      let res = await getCategoryDictionary()
+
+      ctx.body = result("获取分类字典成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取分类字典失败"), ctx)
     }
   }
 }

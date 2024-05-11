@@ -312,7 +312,63 @@ class ArticleService {
     }
   }
 
-  // TODO 通过分类获取该分类下的所有文章简略信息
+  /**
+   * 通过tagId 获取到文章列表
+   * @param {*} current
+   * @param {*} size
+   * @param {*} tag_id
+   */
+  async getArticleListByTagId(current, size, tag_id) {
+    let tagIdList = await getArticleIdListByTagId(tag_id)
+
+    const offset = (current - 1) * size
+    const limit = size * 1
+
+    const { rows, count } = await Article.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        id: tagIdList,
+      },
+      attributes: ["id", "article_title", "article_cover", "createdAt"],
+      order: [["createdAt", "DESC"]],
+    })
+
+    return {
+      current: current,
+      size: size,
+      list: rows,
+      total: count,
+    }
+  }
+
+  /**
+   * 通过分类id获取文章列表
+   * @param {*} current
+   * @param {*} size
+   * @param {*} category_id
+   */
+  async getArticleListByCategoryId(current, size, category_id) {
+    const offset = (current - 1) * size
+    const limit = size * 1
+
+    const { rows, count } = await Article.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        category_id,
+      },
+      attributes: ["id", "article_title", "article_cover", "createdAt"],
+      order: [["createdAt", "DESC"]],
+    })
+
+    return {
+      current: current,
+      size: size,
+      list: rows,
+      total: count,
+    }
+  }
 }
 
 module.exports = new ArticleService()

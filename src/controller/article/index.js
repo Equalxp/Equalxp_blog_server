@@ -1,4 +1,4 @@
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId } = require("../../service/article/index")
 const { createArticleTags } = require("../../service/article/articleTag")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
@@ -185,6 +185,41 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "获取文章列表失败"), ctx)
+    }
+  }
+
+  /**
+   * 根据标签获取该标签下所有文章的简略信息
+   */
+  async getArticleListByTagId(ctx) {
+    try {
+      const { tag_id, current, size } = ctx.request.body
+      if (!tag_id) {
+        return ctx.app.emit("error", throwError(errorCode, "标签id不能为空"), ctx)
+      }
+
+      let res = await getArticleListByTagId(current, size, tag_id)
+      ctx.body = result("根据标签获取文章列表成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "根据标签获取文章列表失败"), ctx)
+    }
+  }
+  /**
+   * 根据分类获取该分类下所有文章的简略信息
+   */
+  async getArticleListByCategoryId(ctx) {
+    try {
+      const { category_id, current, size } = ctx.request.body
+      if (!category_id) {
+        return ctx.app.emit("error", throwError(errorCode, "分类id不能为空"), ctx)
+      }
+
+      let res = await getArticleListByCategoryId(current, size, category_id)
+      ctx.body = result("根据分类获取文章列表成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "根据分类获取文章列表失败"), ctx)
     }
   }
 }

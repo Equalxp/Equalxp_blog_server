@@ -18,6 +18,6 @@ router.put("/updatePassword", auth, verifyUpdatePassword, updatePassword)
 // 管理员修改用户角色
 router.put("/updateRole/:id/:role", auth, adminAuth, updateRole)
 // 分页获取用户列表
-router.post("/getUserList", getUserList)
+router.post("/getUserList", auth, getUserList)
 
 module.exports = router

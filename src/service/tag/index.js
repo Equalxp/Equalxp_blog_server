@@ -1,5 +1,6 @@
 const { Op } = require("sequelize")
 const Tag = require("../../model/tag/tag")
+
 /**
  * 标签服务层
  */
@@ -90,9 +91,14 @@ class TagService {
     }
   }
 
-  // TODO 通过tag获取该tag下所有的文章简略信息，articleTag下有获取到所有文章id的方法
-
   // 字典 用于反显tag
+  async getTagDictionary() {
+    let res = await Tag.findAll({
+      attributes: ["id", "tag_name"],
+    })
+
+    return res ? res : null
+  }
 }
 
 module.exports = new TagService()

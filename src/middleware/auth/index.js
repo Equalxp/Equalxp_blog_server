@@ -10,8 +10,8 @@ const auth = async (ctx, next) => {
 
   const token = authorization ? authorization.replace("Bearer ", "") : undefined
   if (!authorization) {
-    console.error("您没有权限访问")
-    return ctx.app.emit("error", throwError(errorCode, "您没有权限访问"), ctx)
+    console.error("您没有权限访问，请先登录")
+    return ctx.app.emit("error", throwError(errorCode, "您没有权限访问，请先登录"), ctx)
   }
 
   try {
@@ -34,9 +34,9 @@ const auth = async (ctx, next) => {
 
 const adminAuth = async (ctx, next) => {
   const { role } = ctx.state.user
-  if (Number(role) === 0) {
-    console.error("您没有管理员权限")
-    return ctx.app.emit("error", throwError(errorCode, "您没有管理员权限"), ctx)
+  if (Number(role) !== 1) {
+    console.error("普通用户仅限查看")
+    return ctx.app.emit("error", throwError(errorCode, "普通用户仅限查看"), ctx)
   }
   await next()
 }
