@@ -71,7 +71,7 @@ class UserService {
     password && Object.assign(whereOpt, { password })
     role && Object.assign(whereOpt, { role })
     const res = await User.findOne({
-      attributes: ["id", "username", "password", "role"],
+      attributes: { exclude: ["createdAt", "updatedAt"] },
       where: whereOpt,
     })
     return res ? res.dataValues : null

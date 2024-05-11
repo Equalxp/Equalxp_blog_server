@@ -1,4 +1,6 @@
 const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
 const seq = require("../../db/seq")
 
@@ -14,6 +16,18 @@ const ArticleTag = seq.define(
       type: DataTypes.INTEGER,
       require: true,
       comment: "标签id",
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
     },
   },
   {

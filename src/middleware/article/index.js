@@ -1,8 +1,9 @@
 const { getOneArticleTag, deleteArticleTag, createArticleTags } = require("../../service/article/articleTag")
+const { getArticleInfoByTitle } = require("../../service/article/index")
 
 const { ERRORCODE, throwError } = require("../../result/index")
 /**
- * 编辑文章,去除重复标签与文章关联后再新增中间件
+ * 编辑文章,去除重复标签与文章关联后再新增
  * 去除articleTagList里重复的articleTag
  */
 const removeRepeatArticleTag = async (ctx, next) => {
@@ -16,14 +17,38 @@ const removeRepeatArticleTag = async (ctx, next) => {
     return res
       ? null
       : {
-        article_id: id,
-        tag_id: tagId,
-      }
+          article_id: id,
+          tag_id: tagId,
+        }
   })
   let filterList = await Promise.all(promiseList)
   // 创建关联
   await createArticleTags(filterList.filter(articleTag => articleTag != null))
 
+  await next()
+}
+
+/**
+ * 新增文章判断标题是否已经存在过
+ */
+const createJudgeTitleExist = async (ctx, next) => {
+  const { article_title } = ctx.request.body.article
+  let res = await getArticleInfoByTitle(article_title)
+  if (res) {
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "已存在相同的文章标题"), ctx)
+  }
+  await next()
+}
+
+/**
+ * 编辑文章判断被修改的标题是否已经存在
+ */
+const updateJudgeTitleExist = async (ctx, next) => {
+  const { id, article_title } = ctx.request.body.article
+  let res = await getArticleInfoByTitle(article_title)
+  if (res && parseInt(res.id) !== parseInt(id)) {
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "已存在相同的文章标题"), ctx)
+  }
   await next()
 }
 
@@ -36,7 +61,6 @@ const verifyArticleParam = async (ctx, next) => {
     console.error("文章参数校验错误")
     return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "文章参数校验错误"), ctx)
   }
-
   if (!articleTagList.length) {
     return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "文章标签不能为空"), ctx)
   }
@@ -64,6 +88,8 @@ const verifyDelParam = async (ctx, next) => {
 module.exports = {
   verifyTopParam,
   verifyDelParam,
+  createJudgeTitleExist,
+  updateJudgeTitleExist,
   verifyArticleParam,
   removeRepeatArticleTag,
 }

@@ -89,6 +89,10 @@ class TagService {
       list: rows,
     }
   }
+
+  // TODO 通过tag获取该tag下所有的文章简略信息，articleTag下有获取到所有文章id的方法
+
+  // 字典 用于反显tag
 }
 
 module.exports = new TagService()

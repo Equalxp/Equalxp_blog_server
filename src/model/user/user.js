@@ -1,4 +1,6 @@
 const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
 const seq = require("../../db/seq")
 
@@ -34,6 +36,18 @@ const User = seq.define(
       allowNull: true,
       defaultValue: "",
       comment: "用户头像",
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
     },
   },
   {

@@ -1,4 +1,4 @@
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList } = require("../../service/article/index")
 const { createArticleTags } = require("../../service/article/articleTag")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
@@ -59,13 +59,14 @@ class ArticleController {
     try {
       const { id, is_top } = ctx.params
       let res = await updateTop(id, is_top)
+
       ctx.body = result("修改文章置顶状态成功", res)
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "修改文章置顶状态失败"), ctx)
     }
   }
-  
+
   /**
    * 删除文章 3状态下直接删除 其他状态回退
    * @memberof ArticleController
@@ -110,6 +111,80 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, message + "失败"), ctx)
+    }
+  }
+
+  /**
+   * 条件分页获取文章
+   */
+  async getArticleList(ctx) {
+    try {
+      let res = await getArticleList(ctx.request.body)
+
+      ctx.body = result("查询文章成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "查询文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 根据标题获取文章是否已经存在
+   */
+  async getArticleInfoByTitle(ctx) {
+    try {
+      const { article_title } = ctx.request.body
+      let res = await getArticleInfoByTitle(article_title)
+
+      ctx.body = result("文章查询结果", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "根据标题查询文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 根据id获取文章信息
+   */
+  async getArticleById(ctx) {
+    try {
+      const { id } = ctx.params
+
+      let res = await getArticleById(id)
+      ctx.body = result("查询文章详情成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "查询文章详情失败"), ctx)
+    }
+  }
+
+  /**
+   * 前台获取文章列表
+   */
+  async blogHomeGetArticleList(ctx) {
+    try {
+      const { current, size } = ctx.params
+
+      let res = await blogHomeGetArticleList(current, size)
+      ctx.body = result("获取文章列表成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取文章列表失败"), ctx)
+    }
+  }
+
+  /**
+   * 前台获取时间轴列表
+   */
+  async blogTimelineGetArticleList(ctx) {
+    try {
+      const { current, size } = ctx.params
+
+      let res = await blogTimelineGetArticleList(current, size)
+      ctx.body = result("获取文章时间轴列表成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取文章列表失败"), ctx)
     }
   }
 }

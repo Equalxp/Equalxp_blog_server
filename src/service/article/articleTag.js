@@ -32,6 +32,23 @@ class ArticleTagService {
   }
 
   /**
+   * 根据文章id获取标签列表
+   * @param {*} article_id
+   */
+  async getTagIdListByArticleId(article_id) {
+    let res = await ArticleTag.findAll({
+      attributes: ["tag_id"],
+      where: {
+        article_id,
+      },
+    })
+    res = res.map(v => {
+      return v.tag_id
+    })
+    return res
+  }
+
+  /**
    * 根据标签id获取该标签下所有的文章id
    * @param { tag_id }
    * @returns
@@ -50,7 +67,7 @@ class ArticleTagService {
   }
 
   /**
-   * 查询满足的关联
+   * 查询满足的关联 存在就不用新增了 不存在就新增
    * @param {*} article_id
    * @param {*} tag_id
    */

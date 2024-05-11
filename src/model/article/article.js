@@ -1,4 +1,6 @@
 const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
 const seq = require("../../db/seq")
 
@@ -54,6 +56,18 @@ const Article = seq.define(
       type: DataTypes.STRING,
       require: true,
       comment: "原文链接 是转载或翻译的情况下提供",
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      get() {
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+      },
     },
   },
   {
