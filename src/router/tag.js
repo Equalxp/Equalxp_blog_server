@@ -14,7 +14,7 @@ router.post("/add", auth, adminAuth, verifyTag, addTag)
 router.put("/update", auth, adminAuth, verifyTag, updateTag)
 
 // 删除标签
-router.delete("/delete", auth, adminAuth, verifyDeleteTags, deleteTags)
+router.post("/delete", auth, adminAuth, verifyDeleteTags, deleteTags)
 
 // 条件分页获取标签
 router.post("/getTagList", getTagList)

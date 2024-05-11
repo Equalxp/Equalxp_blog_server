@@ -64,6 +64,12 @@ class CategoryService {
     return res ? res.dataValues : null
   }
 
+  // 通过分类id获取分类名称
+  async getCategoryNameById(id) {
+    let res = await Category.findByPk(id)
+    return res ? res.dataValues.category_name : null
+  }
+
   // 分页获取分类列表
   async getCategoryList({ current, size, category_name }) {
     const whereOpt = {}

@@ -116,6 +116,15 @@ class UserService {
       list: rows,
     }
   }
+
+  /**
+   * 根据用户id获取昵称
+   * @param {*} id
+   */
+  async getAuthorNameById(id) {
+    let res = await User.findByPk(id)
+    return res ? res.dataValues.nick_name : null
+  }
 }
 
 module.exports = new UserService()

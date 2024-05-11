@@ -1,7 +1,3 @@
-/**
- * 上传路由
- */
-
 const Router = require("koa-router")
 const router = new Router({ prefix: "/upload" })
 const { auth } = require("../middleware/auth/index")

@@ -20,6 +20,13 @@ class CategoryService {
 
     return res ? res : null
   }
+
+  async addView() {
+    let config = await Config.findByPk(1)
+    let res = config.increment(["view_time"], { by: 1 })
+
+    return res ? true : false
+  }
 }
 
 module.exports = new CategoryService()

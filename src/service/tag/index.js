@@ -91,6 +91,28 @@ class TagService {
     }
   }
 
+  /**
+   * 根据tag_id列表获取tag列表
+   * @param {*} tagIdList
+   */
+  async getTagByTagIdList(tagIdList) {
+    let res = await Tag.findAll({
+      attributes: ["id", "tag_name"],
+      where: {
+        id: tagIdList,
+      },
+    })
+    let tagNameList = res.map(v => {
+      return v.tag_name
+    })
+    let obj = {
+      tagNameList,
+      tagList: res,
+    }
+
+    return obj
+  }
+
   // 字典 用于反显tag
   async getTagDictionary() {
     let res = await Tag.findAll({

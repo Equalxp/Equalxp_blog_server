@@ -1,6 +1,8 @@
-const { Sequelize } = require("sequelize")
 const Article = require("../../model/article/article")
-const { deleteArticleTag, getArticleIdListByTagId, getTagIdListByArticleId } = require("./articleTag")
+const { deleteArticleTag, getArticleIdListByTagId, getTagListByArticleId } = require("./articleTag")
+const { getCategoryNameById } = require("../category/index")
+const { getAuthorNameById } = require("../user/index")
+const { Op } = require("sequelize")
 
 class ArticleService {
   /**
@@ -11,6 +13,8 @@ class ArticleService {
   async createArticle(article) {
     let res
     try {
+      // 判断当前分类是否存在，若是存在，则会有分类id
+
       res = await Article.create(article)
     } catch (err) {
       console.error(err)
@@ -139,14 +143,24 @@ class ArticleService {
    * 根据文章标题获取文章信息 校验是否可以新增或编辑文章
    * @param {*} article_title
    */
-  async getArticleInfoByTitle(article_title) {
+  async getArticleInfoByTitle({ id, article_title }) {
     let res = await Article.findOne({
+      attributes: ["id"],
       where: {
         article_title,
       },
     })
+    if (res) {
+      if (id) {
+        res = res.dataValues.id != id ? true : false
+      } else {
+        res = true
+      }
+    } else {
+      res = false
+    }
 
-    return res ? res : null
+    return res
   }
 
   /**
@@ -176,6 +190,7 @@ class ArticleService {
       })
     is_top && Object.assign(whereOpt, { is_top })
     status && Object.assign(whereOpt, { status })
+    !status && Object.assign(whereOpt, { status: [1, 2] })
     category_id && Object.assign(whereOpt, { category_id })
     // 根据标签id查文章
     if (tag_id) {
@@ -187,6 +202,7 @@ class ArticleService {
         })
     }
 
+    // 获取文章列表
     const { count, rows } = await Article.findAndCountAll({
       offset,
       limit,
@@ -195,15 +211,22 @@ class ArticleService {
       order: [["createdAt", "DESC"]],
     })
 
+    // 根据文章id获取文章各自的标签名称列表 和 分类名称
     let promiseList = []
     promiseList = rows.map(async v => {
-      return await getTagIdListByArticleId(v.dataValues.id)
+      let obj = {
+        categoryName: await getCategoryNameById(v.dataValues.category_id),
+        tagList: await getTagListByArticleId(v.dataValues.id),
+      }
+
+      return obj
     })
 
     await Promise.all(promiseList).then(res => {
       if (res.length) {
         rows.forEach((v, i) => {
-          v.dataValues.tagIdLIst = res[i]
+          v.dataValues.categoryName = res[i].categoryName
+          v.dataValues.tagNameList = res[i].tagList.tagNameList
         })
       }
     })
@@ -222,11 +245,16 @@ class ArticleService {
    */
   async getArticleById(id) {
     let article = await Article.findByPk(id)
-    let tagIdLIst = await getTagIdListByArticleId(id)
+    // 获取标签列表
+    const { tagIdList } = await getTagListByArticleId(id)
+    // 获取分类名称
+    const categoryName = await getCategoryNameById(article.category_id)
+    // 获取文章作者昵称
+    const authorName = await getAuthorNameById(article.author_id)
 
     let res
     if (article) {
-      res = Object.assign(article.dataValues, { tagIdLIst })
+      res = Object.assign(article.dataValues, { tagIdList, authorName, categoryName })
     }
 
     return res
@@ -255,13 +283,18 @@ class ArticleService {
     })
     let promiseList = []
     promiseList = rows.map(async v => {
-      return await getTagIdListByArticleId(v.dataValues.id)
+      let obj = {
+        categoryName: await getCategoryNameById(v.dataValues.category_id),
+        tagList: await getTagListByArticleId(v.dataValues.id),
+      }
+      return obj
     })
 
     await Promise.all(promiseList).then(res => {
       if (res.length) {
         rows.forEach((v, i) => {
-          v.dataValues.tagIdLIst = res[i]
+          v.dataValues.categoryName = res[i].categoryName
+          v.dataValues.tagNameList = res[i].tagList.tagNameList
         })
       }
     })
@@ -294,8 +327,9 @@ class ArticleService {
     })
 
     let resultList = {}
+    // 这里的对象键值只能用字符串，不然对象无法根据键来判断
     rows.forEach(v => {
-      let year = "blog_" + v.createdAt.substring(0, 4)
+      let year = "year_" + v.createdAt.substring(0, 4)
       if (resultList.hasOwnProperty(year)) {
         resultList[year].push(v)
       } else {
@@ -303,11 +337,19 @@ class ArticleService {
         resultList[year].push(v)
       }
     })
+    // 整合数据
+    let final = Object.keys(resultList).map(key => {
+      let obj = {
+        year: key.replace("year_", ""),
+        articleList: resultList[key],
+      }
+      return obj
+    })
 
     return {
       current,
       size,
-      list: resultList,
+      list: final,
       total: count,
     }
   }
@@ -367,6 +409,69 @@ class ArticleService {
       size: size,
       list: rows,
       total: count,
+    }
+  }
+
+  /**
+   * 根据文章id获取推荐文章
+   * @param {*} article_id
+   */
+  async getRecommendArticleById(article_id) {
+    // 上一篇文章id
+    let contextPrevious = await Article.findOne({
+      where: {
+        id: {
+          [Op.lt]: article_id,
+        },
+      },
+      attributes: ["id", "article_title", "article_cover"],
+      order: [["id", "DESC"]],
+    })
+    // 下一篇文章id
+    let contentNext = await Article.findOne({
+      where: {
+        id: {
+          [Op.gt]: article_id,
+        },
+      },
+      attributes: ["id", "article_title", "article_cover"],
+      order: [["id", "ASC"]],
+    })
+
+    // 上下文不存在的话就取当前的
+    if (!contextPrevious) {
+      contextPrevious = await Article.findOne({
+        where: {
+          id: article_id,
+        },
+        attributes: ["id", "article_title", "article_cover"],
+      })
+    }
+    if (!contentNext) {
+      contentNext = await Article.findOne({
+        where: {
+          id: article_id,
+        },
+        attributes: ["id", "article_title", "article_cover"],
+      })
+    }
+    const { tagIdList } = await getTagListByArticleId(article_id)
+    const articleIdList = await getArticleIdListByTagId(tagIdList)
+
+    // 获取文章tagId在本文章中的的 最多六篇推荐文章
+    const recommend = await Article.findAll({
+      limit: 6,
+      where: {
+        id: articleIdList,
+      },
+      attributes: ["id", "article_title", "article_cover", "createdAt"],
+      order: [["createdAt", "DESC"]],
+    })
+
+    return {
+      previous: contextPrevious,
+      next: contentNext,
+      recommend,
     }
   }
 }

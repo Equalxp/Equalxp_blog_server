@@ -75,7 +75,6 @@ class userController {
       const { username } = ctx.request.body
       // 从返回的对象中剔除password属性，将剩下的属性放到res对象
       const { password, ...res } = await getOneUserInfo({ username })
-
       ctx.body = result("用户登录成功", {
         token: jwt.sign(res, JWT_SECRET, { expiresIn: "1d" }),
         username: res.username,
@@ -99,6 +98,20 @@ class userController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "分页获取用户列表失败"), ctx)
+    }
+  }
+
+  /**
+   * 根据用户id获取用户信息 当前用户
+   */
+  async getUserInfo(ctx) {
+    try {
+      let res = await getOneUserInfo(ctx.state.user.id)
+      const { id, role, password, username, ...resInfo } = res
+      ctx.body = result("获取用户信息成功", resInfo)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取用户信息失败"), ctx)
     }
   }
 }

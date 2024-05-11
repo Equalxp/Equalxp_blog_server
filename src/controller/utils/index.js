@@ -4,11 +4,12 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCodeUpload = ERRORCODE.UPLOAD
 const errorCodeConfig = ERRORCODE.CONFIG
 
-const { updateConfig, getConfig } = require("../../service/config/index")
+const { updateConfig, getConfig, addView } = require("../../service/config/index")
 
 class UtilsController {
   // 文件上传
   async upload(ctx) {
+    console.log(ctx.request)
     const { file } = ctx.request.files
 
     if (file) {
@@ -31,6 +32,7 @@ class UtilsController {
       return ctx.app.emit("error", throwError(errorCodeConfig, "修改网站设置失败"))
     }
   }
+  // 获取网站设置
   async getConfig(ctx) {
     try {
       let res = await getConfig()
@@ -39,6 +41,16 @@ class UtilsController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCodeConfig, "获取网站设置失败"))
+    }
+  }
+  // 增加网站访问次数
+  async addView(ctx) {
+    try {
+      let res = await addView()
+      ctx.body = result("增加访问量成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCodeConfig, "增加网站访问量失败"))
     }
   }
 }

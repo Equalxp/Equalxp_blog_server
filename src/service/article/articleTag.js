@@ -1,5 +1,7 @@
 const ArticleTag = require("../../model/article/articleTag")
 
+const { getTagByTagIdList } = require("../tag/index")
+
 class ArticleTagService {
   /**
    * 批量增加文章标签关联
@@ -32,10 +34,10 @@ class ArticleTagService {
   }
 
   /**
-   * 根据文章id获取标签列表
+   * 根据文章id获取标签名称列表
    * @param {*} article_id
    */
-  async getTagIdListByArticleId(article_id) {
+  async getTagListByArticleId(article_id) {
     let res = await ArticleTag.findAll({
       attributes: ["tag_id"],
       where: {
@@ -45,7 +47,13 @@ class ArticleTagService {
     res = res.map(v => {
       return v.tag_id
     })
-    return res
+
+    const { tagNameList, tagList } = await getTagByTagIdList(res)
+    return {
+      tagList,
+      tagIdList: res,
+      tagNameList,
+    }
   }
 
   /**
@@ -60,10 +68,13 @@ class ArticleTagService {
         tag_id,
       },
     })
-    let result = res.map(v => {
-      return v.dataValues.article_id
+    const articleIdList = new Set([])
+    res.map(v => {
+      if (!articleIdList.has(v.dataValues.article_id)) {
+        articleIdList.add(v.dataValues.article_id)
+      }
     })
-    return result ? result : null
+    return Array.from(articleIdList).length ? Array.from(articleIdList) : null
   }
 
   /**

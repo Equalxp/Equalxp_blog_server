@@ -1,5 +1,9 @@
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId } = require("../../service/article/index")
-const { createArticleTags } = require("../../service/article/articleTag")
+const seq = require("../../db/seq")
+
+const { deleteArticleTag } = require("../../service/article/articleTag")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById } = require("../../service/article/index")
+const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
+
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
 
@@ -8,28 +12,28 @@ class ArticleController {
    * 新增文章
    */
   async createArticle(ctx) {
+    // 创建事务 方便回滚
+    const t = await seq.transaction()
     try {
-      const { articleTagList, ...articleRest } = ctx.request.body.article
+      const { tagList, category, ...articleRest } = ctx.request.body.article
+      // 若分类不存在 就先创建分类
+      const { id, category_name } = category
+      articleRest.category_id = await createCategoryOrReturn(id, category_name)
+
       let newArticle, newArticleTagList
       // 先创建文章 拿到文章的id
       newArticle = await createArticle(articleRest)
-      if (newArticle.id) {
-        let promiseList = articleTagList.map(tagId => {
-          // 组装文章和标签的关联表
-          let obj = {
-            article_id: newArticle.id,
-            tag_id: tagId,
-          }
-          return obj
-        })
-        // 批量新增文章标签关联
-        newArticleTagList = await createArticleTags(promiseList)
-      }
+
+      // tag和标签进行关联
+      newArticleTagList = await createArticleTagByArticleId(newArticle.id, tagList)
+
       ctx.body = result("新增文章成功", {
         article: newArticle,
         articleTagList: newArticleTagList,
       })
+      await t.commit()
     } catch (err) {
+      await t.rollback()
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "新增文章失败"), ctx)
     }
@@ -39,14 +43,27 @@ class ArticleController {
    * 根据id修改文章
    */
   async updateArticle(ctx) {
+    const t = await seq.transaction()
     try {
-      const { article } = ctx.request.body
-      delete article.articleTagList
+      console.log(ctx.request.body)
+      const { tagList, category, ...articleRest } = ctx.request.body.article
+      // 先删除这个文章与标签之前的关联
+      await deleteArticleTag(articleRest.id)
+      // 判断新的分类是新增的还是已经存在的 并且返回分类id
+      articleRest.category_id = await createCategoryOrReturn(category.id, category.category_name)
 
-      let res = await updateArticle(article)
+      let newArticleTagList = await createArticleTagByArticleId(articleRest.id, tagList)
 
-      ctx.body = result(0, "修改文章成功", res)
+      console.log(articleRest)
+      let res = await updateArticle(articleRest)
+
+      ctx.body = result("修改文章成功", {
+        res,
+        newArticleTagList,
+      })
+      t.commit()
     } catch (err) {
+      await t.rollback()
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "修改文章失败"), ctx)
     }
@@ -133,9 +150,9 @@ class ArticleController {
    */
   async getArticleInfoByTitle(ctx) {
     try {
-      const { article_title } = ctx.request.body
-      let res = await getArticleInfoByTitle(article_title)
+      const { id, article_title } = ctx.request.body
 
+      let res = await getArticleInfoByTitle({ id, article_title })
       ctx.body = result("文章查询结果", res)
     } catch (err) {
       console.error(err)
@@ -220,6 +237,24 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "根据分类获取文章列表失败"), ctx)
+    }
+  }
+
+  /**
+   * 根据文章获取上下一篇文章 和推荐文章
+   */
+  async getRecommendArticleById(ctx) {
+    try {
+      const { id } = ctx.params
+      if (!id) {
+        return ctx.app.emit("error", throwError(errorCode, "文章id不能为空"), ctx)
+      }
+
+      let res = await getRecommendArticleById(id)
+      ctx.body = result("获取推荐文章成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取推荐文章失败"), ctx)
     }
   }
 }

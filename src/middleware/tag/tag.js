@@ -13,7 +13,6 @@ const verifyTag = async (ctx, next) => {
     console.error("标签已存在")
     return ctx.app.emit("error", throwError(errorCode, "标签已存在"), ctx)
   }
-
   await next()
 }
 

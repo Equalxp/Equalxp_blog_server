@@ -4,16 +4,16 @@ const { auth, adminAuth } = require("../middleware/auth/index")
 
 const router = new Router({ prefix: "/article" })
 
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId } = require("../controller/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById } = require("../controller/article/index")
 
-const { verifyArticleParam, removeRepeatArticleTag, verifyTopParam, verifyDelParam, updateJudgeTitleExist, createJudgeTitleExist } = require("../middleware/article/index")
+const { verifyArticleParam, verifyTopParam, verifyDelParam, updateJudgeTitleExist, createJudgeTitleExist } = require("../middleware/article/index")
 
 /** 后台 start */
 // 创建文章
 router.post("/add", auth, adminAuth, verifyArticleParam, createJudgeTitleExist, createArticle)
 
 // 修改文章
-router.put("/update", auth, adminAuth, verifyArticleParam, updateJudgeTitleExist, removeRepeatArticleTag, updateArticle)
+router.put("/update", auth, adminAuth, verifyArticleParam, updateJudgeTitleExist, updateArticle)
 
 // 修改文章置顶状态
 router.put("/updateTop/:id/:is_top", auth, adminAuth, verifyTopParam, updateTop)
@@ -28,10 +28,10 @@ router.put("/revert/:id", auth, adminAuth, revertArticle)
 router.put("/isPublic/:id/:status", auth, adminAuth, verifyDelParam, toggleArticlePublic)
 
 // 根据文章标题判断文章是否被注册过
-router.get("/titleExist", getArticleInfoByTitle)
+router.post("/titleExist", getArticleInfoByTitle)
 
 // 分页获取文章
-router.post("/getArticleList", getArticleList)
+router.post("/getArticleList", auth, getArticleList)
 /** 后台 end */
 
 /** 前台 start */
@@ -46,6 +46,9 @@ router.post("/getArticleListByTagId", getArticleListByTagId)
 
 // 分页获取该分类下文章的简略信息
 router.post("/getArticleListByCategoryId", getArticleListByCategoryId)
+
+// 根据文章获取上下一篇文章 和推荐文章
+router.get("/getRecommendArticleById/:id", getRecommendArticleById)
 
 /** 前台 end */
 
