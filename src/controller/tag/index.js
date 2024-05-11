@@ -1,6 +1,6 @@
-const { createTag, updateTag, deleteTags } = require("../../service/tag/index")
+const { createTag, updateTag, deleteTags, getTagList } = require("../../service/tag/index")
 
-const { tagAddError, tagUpdateError, tagsDeleteError } = require("../../constant/err.type")
+const { tagAddError, tagUpdateError, tagsDeleteError, getTagListError } = require("../../constant/err.type")
 
 /**
  * 标签控制器
@@ -43,6 +43,9 @@ class TagController {
     }
   }
 
+  /**
+   * 删除标签
+   */
   async deleteTags(ctx) {
     try {
       const { tagIdList } = ctx.request.body
@@ -57,6 +60,24 @@ class TagController {
     } catch (err) {
       console.error(err)
       ctx.app.emit("error", tagsDeleteError, ctx)
+    }
+  }
+
+  /**
+   * 分页查找标签
+   */
+  async getTagList(ctx) {
+    try {
+      const { current, size, tag_name } = ctx.request.body
+      let res = await getTagList({ current, size, tag_name })
+      ctx.body = {
+        code: 0,
+        message: "分页查找标签成功",
+        result: res,
+      }
+    } catch (err) {
+      console.error(err)
+      ctx.app.emit("error", getTagListError, ctx)
     }
   }
 }

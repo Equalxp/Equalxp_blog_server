@@ -2,10 +2,10 @@ const bcrypt = require("bcryptjs") // 密码加盐加密
 
 const { getOneUserInfo } = require("../../service/user")
 
-const { userFormateError, userAlreadyExited, userRegisterError, userDoesNotExist, userLoginError, invalidPassword, differentPassword, userUpdatePasswordError } = require("../../constant/err.type")
+const { userFormateError, userAlreadyExited, userRegisterError, userDoesNotExist, userLoginError, invalidPassword, differentPassword, userUpdatePasswordError, usernameFormateError } = require("../../constant/err.type")
 
 /**
- * 校验用户名和密码不能为空
+ * 校验用户名和密码是否合法
  * @param {*} ctx
  * @param {*} next
  */
@@ -15,6 +15,11 @@ const userValidate = async (ctx, next) => {
   if (!username || !password) {
     console.error("用户名或密码为空")
     ctx.app.emit("error", userFormateError, ctx)
+    return
+  }
+  if (!/^[A-Za-z0-9]+$/.test(username)) {
+    console.error("用户名只能是数字和字母组成")
+    ctx.app.emit("error", usernameFormateError, ctx)
     return
   }
   // 合法就进行下一步
@@ -80,7 +85,12 @@ const verifyLogin = async (ctx, next) => {
 
   await next()
 }
-
+/**
+ * 判断更新密码
+ * @param {*} ctx 
+ * @param {*} next 
+ * @returns 
+ */
 const verifyUpdatePassword = async (ctx, next) => {
   try {
     const { username } = ctx.state.user

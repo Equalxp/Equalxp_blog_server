@@ -1,4 +1,6 @@
 const Category = require("../../model/category/category")
+const { Op } = require("sequelize")
+
 /**
  * 分类服务层
  */
@@ -61,6 +63,37 @@ class CategoryService {
     })
 
     return res ? res.dataValues : null
+  }
+
+  /**
+   * 分页获取分类列表
+   * @param { current, size, category_name}
+   * @returns current size total list
+   */
+  async getCategoryList({ current, size, category_name }) {
+    const whereOpt = {}
+    const offset = (current - 1) * size
+    const limit = size * 1
+
+    category_name &&
+      Object.assign(whereOpt, {
+        category_name: {
+          [Op.like]: `%${category_name}%`,
+        },
+      })
+
+    const { count, rows } = await Category.findAndCountAll({
+      offset,
+      limit,
+      where: whereOpt,
+    })
+
+    return {
+      current: current,
+      size: size,
+      total: count,
+      list: rows,
+    }
   }
 }
 

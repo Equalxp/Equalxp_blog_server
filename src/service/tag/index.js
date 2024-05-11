@@ -64,6 +64,37 @@ class TagService {
 
     return res ? res.dataValues : null
   }
+
+  /**
+   * 根据id或者标签名称获取标签信息
+   * @param { current, size, tag_name}
+   * @returns tagListValue
+   */
+  async getTagList({ current, size, tag_name }) {
+    const whereOpt = {}
+    const offset = (current - 1) * size
+    const limit = size * 1
+
+    tag_name &&
+      Object.assign(whereOpt, {
+        tag_name: {
+          [Op.like]: `%${tag_name}%`,
+        },
+      })
+
+    const { count, rows } = await Tag.findAndCountAll({
+      offset,
+      limit,
+      where: whereOpt,
+    })
+
+    return {
+      current: current,
+      size: size,
+      total: count,
+      list: rows,
+    }
+  }
 }
 
 module.exports = new TagService()

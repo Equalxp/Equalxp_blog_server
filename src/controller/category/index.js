@@ -1,6 +1,6 @@
-const { createCategory, updateCategory, deleteCategories } = require("../../service/category/index")
+const { createCategory, updateCategory, deleteCategories, getCategoryList } = require("../../service/category/index")
 
-const { categoryAddError, categoryUpdateError, categoriesDeleteError } = require("../../constant/err.type")
+const { categoryAddError, categoryUpdateError, categoriesDeleteError, getCategoryListError } = require("../../constant/err.type")
 
 /**
  * 分类控制器
@@ -43,6 +43,9 @@ class CategoryController {
     }
   }
 
+  /**
+   * 删除分类
+   */
   async deleteCategories(ctx) {
     try {
       const { categoryIdList } = ctx.request.body
@@ -57,6 +60,24 @@ class CategoryController {
     } catch (err) {
       console.error(err)
       ctx.app.emit("error", categoriesDeleteError, ctx)
+    }
+  }
+
+  /**
+   * 条件分页查找分类列表
+   */
+  async getCategoryList(ctx) {
+    try {
+      const { current, size, category_name } = ctx.request.body
+      let res = await getCategoryList({ current, size, category_name })
+      ctx.body = {
+        code: 0,
+        message: "分页查找分类成功",
+        result: res,
+      }
+    } catch (err) {
+      console.error(err)
+      ctx.app.emit("error", getCategoryListError, ctx)
     }
   }
 }

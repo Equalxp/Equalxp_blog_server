@@ -1,16 +1,24 @@
 const User = require("../../model/user/user")
 const { randomNickname } = require("../../utils/tool")
 const bcrypt = require("bcryptjs") // 密码加盐加密
+const { Op } = require("sequelize")
+
 class UserService {
+  /**
+   * 用户注册
+   * @param {*} user
+   */
   async createUser(user) {
-    const { username, password } = user
-    let role, nick_name
+    let { username, password, nick_name } = user
+    let role
     if (username === "admin") {
       role = 1
+      nick_name = "尊贵的系统管理员"
     } else {
-      role = 0
+      role = 2
     }
-    nick_name = randomNickname("小白")
+    // 随机生成昵称
+    nick_name = nick_name ? nick_name : randomNickname("小白")
     const res = await User.create({ username, password, nick_name, role })
 
     return res.dataValues
@@ -73,27 +81,34 @@ class UserService {
    * 分页查询用户列表
    */
   async getUserList({ current, size, nick_name, role }) {
+    // 分页
     const offset = (current - 1) * size
     const limit = size * 1
 
+    // 条件
     const whereOpt = {}
+    console.log(typeof role)
+    if (typeof role === "number") {
+      role &&
+        Object.assign(whereOpt, {
+          role: {
+            [Op.eq]: role,
+          },
+        })
+    }
     nick_name &&
       Object.assign(whereOpt, {
         nick_name: {
           [Op.like]: `%${nick_name}%`,
         },
       })
-    role && Object.assign(whereOpt, role)
-    const { count, rows } = await User.findAndCountAll(
-      {
-        offset,
-        limit,
-      },
-      {
-        where: whereOpt,
-      }
-    )
 
+    const { count, rows } = await User.findAndCountAll({
+      offset,
+      limit,
+      attributes: { exclude: ["password"] },
+      where: whereOpt,
+    })
     return {
       current,
       size,

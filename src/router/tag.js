@@ -1,11 +1,7 @@
-/**
- * 标签路由
- * @author: M
- */
 const Router = require("koa-router")
 const router = new Router({ prefix: "/tag" })
 
-const { addTag, updateTag, deleteTags } = require("../controller/tag/index")
+const { addTag, updateTag, deleteTags, getTagList } = require("../controller/tag/index")
 
 const { verifyTag, verifyDeleteTags } = require("../middleware/tag/tag")
 
@@ -17,5 +13,8 @@ router.put("/update", verifyTag, updateTag)
 
 // 删除标签
 router.delete("/delete", verifyDeleteTags, deleteTags)
+
+// 条件分页获取标签
+router.post("/getTagList", getTagList)
 
 module.exports = router

@@ -35,8 +35,8 @@ const Article = seq.define(
     is_top: {
       type: DataTypes.INTEGER,
       require: true,
-      defaultValue: 0,
-      comment: "是否置顶 1 置顶 0 取消置顶",
+      defaultValue: 2,
+      comment: "是否置顶 1 置顶 2 取消置顶",
     },
     status: {
       type: DataTypes.INTEGER,
@@ -51,7 +51,7 @@ const Article = seq.define(
       comment: "文章类型 1 原创 2 转载 3 翻译",
     },
     origin_url: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       require: true,
       comment: "原文链接 是转载或翻译的情况下提供",
     },

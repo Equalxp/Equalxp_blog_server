@@ -20,8 +20,8 @@ const User = seq.define(
     role: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
-      comment: "用户角色 0 普通用户 1 管理员",
+      defaultValue: 2,
+      comment: "用户角色 1 管理员 2 普通用户",
     },
     nick_name: {
       type: DataTypes.STRING,
