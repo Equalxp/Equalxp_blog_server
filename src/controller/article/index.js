@@ -1,7 +1,7 @@
 const seq = require("../../db/seq")
 
 const { deleteArticleTag } = require("../../service/article/articleTag")
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent } = require("../../service/article/index")
 const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
@@ -255,6 +255,21 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "获取推荐文章失败"), ctx)
+    }
+  }
+
+  /**
+ * 全局搜索文章
+ */
+  async getArticleListByContent(ctx) {
+    try {
+      const { content } = ctx.params
+
+      let res = await getArticleListByContent(content)
+      ctx.body = result("按照内容搜索文章成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "按照内容搜索文章成功失败"), ctx)
     }
   }
 }

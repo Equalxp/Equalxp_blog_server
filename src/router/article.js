@@ -4,7 +4,7 @@ const { auth, adminAuth } = require("../middleware/auth/index")
 
 const router = new Router({ prefix: "/article" })
 
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById } = require("../controller/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent } = require("../controller/article/index")
 
 const { verifyArticleParam, verifyTopParam, verifyDelParam, updateJudgeTitleExist, createJudgeTitleExist } = require("../middleware/article/index")
 
@@ -49,6 +49,9 @@ router.post("/getArticleListByCategoryId", getArticleListByCategoryId)
 
 // 根据文章获取上下一篇文章 和推荐文章
 router.get("/getRecommendArticleById/:id", getRecommendArticleById)
+
+// 文章全局搜索
+router.get("/getArticleListByContent/:content", getArticleListByContent)
 
 /** 前台 end */
 

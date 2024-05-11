@@ -484,6 +484,37 @@ class ArticleService {
     let res = await Article.count()
     return res
   }
+
+  /**
+   * 根据文章内容搜索文章
+   */
+  async getArticleListByContent(content) {
+    let res = await Article.findAll({
+      where: {
+        article_content: {
+          [Op.like]: `%${content}%`
+        }
+      },
+      // 查找指定属性
+      attributes: ["id", "article_title", "article_content", "view_times"],
+      limit: 8,
+      order: [["view_times", "DESC"]],
+    })
+    let result = []
+    res.length &&
+      res.forEach(r => {
+        let { id, article_content, article_title } = r.dataValues
+        let index = article_content.search(content)
+        let previous = index - 8 > 0 ? index - 8 : index
+        let next = index + content.length + 8
+        result.push({
+          id,
+          article_content: article_content.substring(previous, next),
+          article_title,
+        })
+      })
+    return result
+  }
 }
 
 module.exports = new ArticleService()
