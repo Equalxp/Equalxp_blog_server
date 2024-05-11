@@ -16,9 +16,9 @@ const removeRepeatArticleTag = async (ctx, next) => {
     return res
       ? null
       : {
-          article_id: id,
-          tag_id: tagId,
-        }
+        article_id: id,
+        tag_id: tagId,
+      }
   })
   let filterList = await Promise.all(promiseList)
   // 创建关联
@@ -32,15 +32,38 @@ const removeRepeatArticleTag = async (ctx, next) => {
  */
 const verifyArticleParam = async (ctx, next) => {
   const { article_title, author_id, category_id, article_content, articleTagList } = ctx.request.body.article
-  if (!article_title || !author_id || !category_id || !article_content || !articleTagList.length) {
+  if (!article_title || !author_id || !category_id || !article_content) {
     console.error("文章参数校验错误")
     return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "文章参数校验错误"), ctx)
+  }
+
+  if (!articleTagList.length) {
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "文章标签不能为空"), ctx)
+  }
+
+  await next()
+}
+
+const verifyTopParam = async (ctx, next) => {
+  const { id, is_top } = ctx.params
+  if (!/^[0-9]+$/.test(id) || !/^[0-9]+$/.test(is_top)) {
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "参数只能为数字"), ctx)
+  }
+
+  await next()
+}
+const verifyDelParam = async (ctx, next) => {
+  const { id, status } = ctx.params
+  if (!/^[0-9]+$/.test(id) || !/^[0-9]+$/.test(status)) {
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "参数只能为数字"), ctx)
   }
 
   await next()
 }
 
 module.exports = {
+  verifyTopParam,
+  verifyDelParam,
   verifyArticleParam,
   removeRepeatArticleTag,
 }

@@ -1,4 +1,4 @@
-const { createArticle, updateArticle } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic } = require("../../service/article/index")
 const { createArticleTags } = require("../../service/article/articleTag")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
@@ -58,10 +58,58 @@ class ArticleController {
   async updateTop(ctx) {
     try {
       const { id, is_top } = ctx.params
-      ctx.body = result("修改文章置顶状态成功", id)
+      let res = await updateTop(id, is_top)
+      ctx.body = result("修改文章置顶状态成功", res)
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "修改文章置顶状态失败"), ctx)
+    }
+  }
+  
+  /**
+   * 删除文章 3状态下直接删除 其他状态回退
+   * @memberof ArticleController
+   */
+  async deleteArticle(ctx) {
+    try {
+      const { id, status } = ctx.params
+      let res = await deleteArticle(id, status)
+
+      ctx.body = result("删除文章成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "删除文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 恢复文章
+   */
+  async revertArticle(ctx) {
+    try {
+      const { id } = ctx.params
+      let res = await revertArticle(id)
+
+      ctx.body = result("恢复文章成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "恢复文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 公开或隐藏文章
+   */
+  async toggleArticlePublic(ctx) {
+    try {
+      const { id, status } = ctx.params
+      let res = await toggleArticlePublic(id, status)
+
+      let message = Number(status) === 1 ? "隐藏文章" : "公开文章"
+      ctx.body = result(message + "成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, message + "失败"), ctx)
     }
   }
 }
