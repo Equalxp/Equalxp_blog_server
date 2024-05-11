@@ -22,7 +22,7 @@ const Tag = seq.define(
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
@@ -31,6 +31,6 @@ const Tag = seq.define(
   }
 )
 
-//Tag.sync({ force: true }) //创建数据表
+// Tag.sync({ alter: true }) // 同步数据库表
 
 module.exports = Tag

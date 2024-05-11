@@ -23,6 +23,11 @@ const Article = seq.define(
       require: true,
       comment: "分类id 不能为空",
     },
+    article_description: {
+      type: DataTypes.STRING,
+      require: true,
+      comment: "描述信息 不能为空",
+    },
     article_content: {
       type: DataTypes.TEXT,
       require: true,
@@ -57,6 +62,18 @@ const Article = seq.define(
       require: true,
       comment: "原文链接 是转载或翻译的情况下提供",
     },
+    view_times: {
+      type: DataTypes.INTEGER,
+      require: true,
+      defaultValue: 0,
+      comment: "文章访问次数",
+    },
+    thumbs_up_times: {
+      type: DataTypes.INTEGER,
+      require: true,
+      defaultValue: 0,
+      comment: "文章点赞次数",
+    },
     createdAt: {
       type: Sequelize.DATE,
       get() {
@@ -66,7 +83,7 @@ const Article = seq.define(
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
@@ -75,6 +92,6 @@ const Article = seq.define(
   }
 )
 
-// Article.sync({ force: true }) //创建数据表
+// Article.sync({ alter: true }) //同步数据表
 
 module.exports = Article

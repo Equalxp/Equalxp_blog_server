@@ -1,8 +1,8 @@
-const { DataTypes } = require("sequelize");
-const { Sequelize } = require("sequelize");
-var moment = require("moment");
+const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
-const seq = require("../../db/seq");
+const seq = require("../../db/seq")
 
 // 创建模型
 const User = seq.define(
@@ -40,20 +40,20 @@ const User = seq.define(
     createdAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
   {
     freezeTableName: true, // 强制表名不转复数
   }
-);
-// User.sync({ force: true }) //创建数据表
+)
+// User.sync({ alter: true }) //创建数据表
 
-module.exports = User;
+module.exports = User

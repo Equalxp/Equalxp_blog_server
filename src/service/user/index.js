@@ -125,6 +125,12 @@ class UserService {
     let res = await User.findByPk(id)
     return res ? res.dataValues.nick_name : null
   }
+
+  // 获取用户总数
+  async getUserCount() {
+    let res = await User.count()
+    return res
+  }
 }
 
 module.exports = new UserService()

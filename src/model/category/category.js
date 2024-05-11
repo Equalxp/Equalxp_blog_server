@@ -22,7 +22,7 @@ const Category = seq.define(
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
@@ -31,6 +31,6 @@ const Category = seq.define(
   }
 )
 
-// Category.sync({ force: true }) //创建数据表
+// Category.sync({ alter: true }) //同步数据表
 
 module.exports = Category

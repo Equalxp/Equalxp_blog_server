@@ -6,6 +6,7 @@ const ERRORCODE = {
   ARTICLE: "100005",
   UPLOAD: "100006",
   CONFIG: "100007",
+  STATISTIC: "100008",
 }
 
 /**

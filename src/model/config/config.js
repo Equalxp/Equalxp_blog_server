@@ -1,8 +1,8 @@
-const { DataTypes } = require("sequelize");
-const { Sequelize } = require("sequelize");
-var moment = require("moment");
+const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
-const seq = require("../../db/seq");
+const seq = require("../../db/seq")
 
 const Config = seq.define(
   "blog_config",
@@ -67,21 +67,21 @@ const Config = seq.define(
     createdAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
   {
     freezeTableName: true, // 强制表名不转复数
   }
-);
+)
 
-//Config.sync({ force: true }) //创建数据表
+// Config.sync({ alter: true }) //同步数据表
 
-module.exports = Config;
+module.exports = Config

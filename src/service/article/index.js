@@ -245,19 +245,21 @@ class ArticleService {
    */
   async getArticleById(id) {
     let article = await Article.findByPk(id)
+    if (article) {
+      await article.increment("view_times", { by: 1 })
+    }
     // 获取标签列表
-    const { tagIdList } = await getTagListByArticleId(id)
+    const { tagIdList, tagNameList } = await getTagListByArticleId(id)
     // 获取分类名称
     const categoryName = await getCategoryNameById(article.category_id)
     // 获取文章作者昵称
     const authorName = await getAuthorNameById(article.author_id)
 
-    let res
     if (article) {
-      res = Object.assign(article.dataValues, { tagIdList, authorName, categoryName })
+      Object.assign(article.dataValues, { tagIdList, tagNameList, authorName, categoryName })
     }
 
-    return res
+    return article
   }
 
   /**
@@ -473,6 +475,14 @@ class ArticleService {
       next: contentNext,
       recommend,
     }
+  }
+
+  /**
+   *  获取文章总数
+   */
+  async getArticleCount() {
+    let res = await Article.count()
+    return res
   }
 }
 

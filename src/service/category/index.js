@@ -105,6 +105,12 @@ class CategoryService {
 
     return res ? res : null
   }
+  
+  // 获取分类总数
+  async getCategoryCount() {
+    let res = await Category.count()
+    return res
+  }
 }
 
 module.exports = new CategoryService()

@@ -210,12 +210,12 @@ class ArticleController {
    */
   async getArticleListByTagId(ctx) {
     try {
-      const { tag_id, current, size } = ctx.request.body
-      if (!tag_id) {
+      const { id, current, size } = ctx.request.body
+      if (!id) {
         return ctx.app.emit("error", throwError(errorCode, "标签id不能为空"), ctx)
       }
 
-      let res = await getArticleListByTagId(current, size, tag_id)
+      let res = await getArticleListByTagId(current, size, id)
       ctx.body = result("根据标签获取文章列表成功", res)
     } catch (err) {
       console.error(err)
@@ -227,12 +227,12 @@ class ArticleController {
    */
   async getArticleListByCategoryId(ctx) {
     try {
-      const { category_id, current, size } = ctx.request.body
-      if (!category_id) {
+      const { id, current, size } = ctx.request.body
+      if (!id) {
         return ctx.app.emit("error", throwError(errorCode, "分类id不能为空"), ctx)
       }
 
-      let res = await getArticleListByCategoryId(current, size, category_id)
+      let res = await getArticleListByCategoryId(current, size, id)
       ctx.body = result("根据分类获取文章列表成功", res)
     } catch (err) {
       console.error(err)

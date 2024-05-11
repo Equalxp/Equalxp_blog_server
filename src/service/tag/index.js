@@ -121,6 +121,12 @@ class TagService {
 
     return res ? res : null
   }
+
+  // 获取标签总数
+  async getTagCount() {
+    let res = await Tag.count()
+    return res
+  }
 }
 
 module.exports = new TagService()
