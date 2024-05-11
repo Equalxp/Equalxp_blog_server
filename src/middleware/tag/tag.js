@@ -3,13 +3,13 @@ const { ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.TAG
 
 const verifyTag = async (ctx, next) => {
-  const { tag_name } = ctx.request.body
+  const { id, tag_name } = ctx.request.body
   if (!tag_name) {
     console.error("标签名称不能为空")
     return ctx.app.emit("error", throwError(errorCode, "标签名称不能为空"), ctx)
   }
   let res = await getOneTag({ tag_name })
-  if (res) {
+  if (res && res.id !== id) {
     console.error("标签已存在")
     return ctx.app.emit("error", throwError(errorCode, "标签已存在"), ctx)
   }

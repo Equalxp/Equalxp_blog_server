@@ -14,7 +14,7 @@ router.post("/add", auth, adminAuth, verifyCategory, addCategory)
 router.put("/update", auth, adminAuth, verifyCategory, updateCategory)
 
 // 删除分类
-router.delete("/delete", auth, adminAuth, verifyDeleteCategories, deleteCategories)
+router.post("/delete", auth, adminAuth, verifyDeleteCategories, deleteCategories)
 
 // 条件分页获取分类
 router.post("/getCategoryList", getCategoryList)

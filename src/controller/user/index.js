@@ -78,6 +78,8 @@ class userController {
 
       ctx.body = result("用户登录成功", {
         token: jwt.sign(res, JWT_SECRET, { expiresIn: "1d" }),
+        username: res.username,
+        role: res.role,
       })
     } catch (err) {
       console.error(err)

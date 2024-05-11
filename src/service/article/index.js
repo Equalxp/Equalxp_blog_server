@@ -175,7 +175,7 @@ class ArticleService {
         },
       })
     is_top && Object.assign(whereOpt, { is_top })
-    status && Object.assign(whereOpt, { is_top })
+    status && Object.assign(whereOpt, { status })
     category_id && Object.assign(whereOpt, { category_id })
     // 根据标签id查文章
     if (tag_id) {
@@ -190,7 +190,7 @@ class ArticleService {
     const { count, rows } = await Article.findAndCountAll({
       offset,
       limit,
-      whereOpt,
+      where: whereOpt,
       attributes: { exclude: ["article_content", "origin_url"] },
       order: [["createdAt", "DESC"]],
     })
