@@ -1,7 +1,7 @@
 const { createCategory, updateCategory, deleteCategories, getCategoryList } = require("../../service/category/index")
 
-const { categoryAddError, categoryUpdateError, categoriesDeleteError, getCategoryListError } = require("../../constant/err.type")
-
+const { result, ERRORCODE, throwError } = require("../../result/index")
+const errorCode = ERRORCODE.CATEGORY
 /**
  * 分类控制器
  */
@@ -12,17 +12,13 @@ class CategoryController {
   async addCategory(ctx) {
     try {
       let res = await createCategory(ctx.request.body)
-      ctx.body = {
-        code: 0,
-        message: "新增分类成功",
-        result: {
-          id: res.id,
-          category_name: res.category_name,
-        },
-      }
+      ctx.body = result("新增分类成功", {
+        id: res.id,
+        category_name: res.category_name,
+      })
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", categoryAddError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "新增分类失败"), ctx)
     }
   }
 
@@ -32,14 +28,10 @@ class CategoryController {
   async updateCategory(ctx) {
     try {
       let res = await updateCategory(ctx.request.body)
-      ctx.body = {
-        code: 0,
-        message: "修改分类成功",
-        result: res,
-      }
+      ctx.body = result("修改分类成功", res)
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", categoryUpdateError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "修改分类失败"), ctx)
     }
   }
 
@@ -50,16 +42,12 @@ class CategoryController {
     try {
       const { categoryIdList } = ctx.request.body
       let res = await deleteCategories(categoryIdList)
-      ctx.body = {
-        code: 0,
-        message: "删除分类成功",
-        result: {
-          updateNum: res,
-        },
-      }
+      ctx.body = result("删除分类成功", {
+        updateNum: res,
+      })
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", categoriesDeleteError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "删除分类失败"), ctx)
     }
   }
 
@@ -70,14 +58,10 @@ class CategoryController {
     try {
       const { current, size, category_name } = ctx.request.body
       let res = await getCategoryList({ current, size, category_name })
-      ctx.body = {
-        code: 0,
-        message: "分页查找分类成功",
-        result: res,
-      }
+      ctx.body = result("分页查找分类成功", res)
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", getCategoryListError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "分页查找分类失败"), ctx)
     }
   }
 }

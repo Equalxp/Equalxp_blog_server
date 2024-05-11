@@ -17,15 +17,14 @@ class TagService {
   }
 
   /**
- * 修改标签
- * @param {*} tag
- * @returns Boolean
- */
+   * 修改标签
+   * @param {*} tag
+   * @returns Boolean
+   */
   async updateTag(tag) {
     const { id, tag_name } = tag
     const res = await Tag.update({ tag_name }, { where: { id } })
 
-    console.log(res)
     return res[0] > 0 ? true : false
   }
 
@@ -65,11 +64,6 @@ class TagService {
     return res ? res.dataValues : null
   }
 
-  /**
-   * 根据id或者标签名称获取标签信息
-   * @param { current, size, tag_name}
-   * @returns tagListValue
-   */
   async getTagList({ current, size, tag_name }) {
     const whereOpt = {}
     const offset = (current - 1) * size

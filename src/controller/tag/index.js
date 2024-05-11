@@ -1,7 +1,7 @@
 const { createTag, updateTag, deleteTags, getTagList } = require("../../service/tag/index")
 
-const { tagAddError, tagUpdateError, tagsDeleteError, getTagListError } = require("../../constant/err.type")
-
+const { result, ERRORCODE, throwError } = require("../../result/index")
+const errorCode = ERRORCODE.TAG
 /**
  * 标签控制器
  */
@@ -12,17 +12,13 @@ class TagController {
   async addTag(ctx) {
     try {
       let res = await createTag(ctx.request.body)
-      ctx.body = {
-        code: 0,
-        message: "新增标签成功",
-        result: {
-          id: res.id,
-          tag_name: res.tag_name,
-        },
-      }
+      ctx.body = result("新增标签成功", {
+        id: res.id,
+        tag_name: res.tag_name,
+      })
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", tagAddError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "新增标签失败"), ctx)
     }
   }
 
@@ -32,14 +28,10 @@ class TagController {
   async updateTag(ctx) {
     try {
       let res = await updateTag(ctx.request.body)
-      ctx.body = {
-        code: 0,
-        message: "修改标签成功",
-        result: res,
-      }
+      ctx.body = result("修改标签成功", res)
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", tagUpdateError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "修改标签失败"), ctx)
     }
   }
 
@@ -50,16 +42,12 @@ class TagController {
     try {
       const { tagIdList } = ctx.request.body
       let res = await deleteTags(tagIdList)
-      ctx.body = {
-        code: 0,
-        message: "删除标签成功",
-        result: {
-          updateNum: res,
-        },
-      }
+      ctx.body = result("删除标签成功", {
+        updateNum: res,
+      })
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", tagsDeleteError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "删除标签失败"), ctx)
     }
   }
 
@@ -70,14 +58,10 @@ class TagController {
     try {
       const { current, size, tag_name } = ctx.request.body
       let res = await getTagList({ current, size, tag_name })
-      ctx.body = {
-        code: 0,
-        message: "分页查找标签成功",
-        result: res,
-      }
+      ctx.body = result("分页查找标签成功", res)
     } catch (err) {
       console.error(err)
-      ctx.app.emit("error", getTagListError, ctx)
+      return ctx.app.emit("error", throwError(errorCode, "分页查找标签失败"), ctx)
     }
   }
 }

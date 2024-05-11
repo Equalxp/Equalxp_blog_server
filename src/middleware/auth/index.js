@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken")
 
 const { JWT_SECRET } = require("../../config/config.default")
 
-const { tokenExpiredError, invalidToken, hasNotPermission, hasNotAdminPermission } = require("../../constant/err.type")
+const { ERRORCODE, throwError } = require("../../result/index")
+const errorCode = ERRORCODE.AUTH
 
 const auth = async (ctx, next) => {
   const { authorization } = ctx.request.header
@@ -10,8 +11,7 @@ const auth = async (ctx, next) => {
   const token = authorization ? authorization.replace("Bearer ", "") : undefined
   if (!authorization) {
     console.error("您没有权限访问")
-    ctx.app.emit("error", hasNotPermission, ctx)
-    return
+    return ctx.app.emit("error", throwError(errorCode, "您没有权限访问"), ctx)
   }
 
   try {
@@ -22,10 +22,10 @@ const auth = async (ctx, next) => {
     switch (err.name) {
       case "TokenExpiredError":
         console.error("token已过期", err)
-        return ctx.app.emit("error", tokenExpiredError, ctx)
+        return ctx.app.emit("error", throwError(errorCode, "token已过期"), ctx)
       case "JsonWebTokenError":
         console.error("无效的token", err)
-        return ctx.app.emit("error", invalidToken, ctx)
+        return ctx.app.emit("error", throwError(errorCode, "无效的token"), ctx)
     }
   }
 
@@ -36,7 +36,7 @@ const adminAuth = async (ctx, next) => {
   const { role } = ctx.state.user
   if (Number(role) === 0) {
     console.error("您没有管理员权限")
-    return ctx.app.emit("error", hasNotAdminPermission, ctx)
+    return ctx.app.emit("error", throwError(errorCode, "您没有管理员权限"), ctx)
   }
   await next()
 }

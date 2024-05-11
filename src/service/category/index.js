@@ -1,6 +1,5 @@
 const Category = require("../../model/category/category")
 const { Op } = require("sequelize")
-
 /**
  * 分类服务层
  */
@@ -65,11 +64,7 @@ class CategoryService {
     return res ? res.dataValues : null
   }
 
-  /**
-   * 分页获取分类列表
-   * @param { current, size, category_name}
-   * @returns current size total list
-   */
+  // 分页获取分类列表
   async getCategoryList({ current, size, category_name }) {
     const whereOpt = {}
     const offset = (current - 1) * size

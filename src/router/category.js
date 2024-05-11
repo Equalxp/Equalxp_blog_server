@@ -1,9 +1,9 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/Category" })
 
-const { addCategory, updateCategory, deleteCategories, getCategoryList } = require("../controller/category/index")
+const { addCategory, updateCategory, deleteCategories, getCategoryList } = require("../controller/Category/index")
 
-const { verifyCategory, verifyDeleteCategories } = require("../middleware/category/category")
+const { verifyCategory, verifyDeleteCategories } = require("../middleware/Category/Category")
 
 // 新增标签
 router.post("/add", verifyCategory, addCategory)

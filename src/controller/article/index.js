@@ -1,6 +1,7 @@
 const { createArticle, updateArticle } = require("../../service/article/index")
 const { createArticleTags } = require("../../service/article/articleTag")
-const { articleAddError, articleUpdateError } = require("../../constant/err.type")
+const { result, ERRORCODE, throwError } = require("../../result/index")
+const errorCode = ERRORCODE.ARTICLE
 
 class ArticleController {
   /**
@@ -24,17 +25,13 @@ class ArticleController {
         // 批量新增文章标签关联
         newArticleTagList = await createArticleTags(promiseList)
       }
-      ctx.body = {
-        code: 0,
-        message: "新增文章成功",
-        result: {
-          article: newArticle,
-          articleTagList: newArticleTagList,
-        },
-      }
+      ctx.body = result("新增文章成功", {
+        article: newArticle,
+        articleTagList: newArticleTagList,
+      })
     } catch (err) {
-      console.error("新增文章失败")
-      ctx.app.emit("error", articleAddError, ctx)
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "新增文章失败"), ctx)
     }
   }
 
@@ -48,14 +45,23 @@ class ArticleController {
 
       let res = await updateArticle(article)
 
-      ctx.body = {
-        code: 0,
-        message: "修改文章成功",
-        result: res,
-      }
+      ctx.body = result(0, "修改文章成功", res)
     } catch (err) {
-      console.error("文章修改失败")
-      ctx.app.emit("error", articleUpdateError, ctx)
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "修改文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 修改文章置顶状态
+   */
+  async updateTop(ctx) {
+    try {
+      const { id, is_top } = ctx.params
+      ctx.body = result("修改文章置顶状态成功", id)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "修改文章置顶状态失败"), ctx)
     }
   }
 }

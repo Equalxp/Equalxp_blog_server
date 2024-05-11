@@ -102,13 +102,13 @@ class UserService {
           [Op.like]: `%${nick_name}%`,
         },
       })
-
     const { count, rows } = await User.findAndCountAll({
       offset,
       limit,
       attributes: { exclude: ["password"] },
       where: whereOpt,
     })
+
     return {
       current,
       size,

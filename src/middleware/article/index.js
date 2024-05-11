@@ -1,6 +1,6 @@
 const { getOneArticleTag, deleteArticleTag, createArticleTags } = require("../../service/article/articleTag")
 
-const { articleVerifyError } = require("../../constant/err.type")
+const { ERRORCODE, throwError } = require("../../result/index")
 /**
  * 编辑文章,去除重复标签与文章关联后再新增中间件
  * 去除articleTagList里重复的articleTag
@@ -16,9 +16,9 @@ const removeRepeatArticleTag = async (ctx, next) => {
     return res
       ? null
       : {
-        article_id: id,
-        tag_id: tagId,
-      }
+          article_id: id,
+          tag_id: tagId,
+        }
   })
   let filterList = await Promise.all(promiseList)
   // 创建关联
@@ -30,17 +30,17 @@ const removeRepeatArticleTag = async (ctx, next) => {
 /**
  * 新增/编辑文章校验参数
  */
-const verifyParam = async (ctx, next) => {
+const verifyArticleParam = async (ctx, next) => {
   const { article_title, author_id, category_id, article_content, articleTagList } = ctx.request.body.article
   if (!article_title || !author_id || !category_id || !article_content || !articleTagList.length) {
     console.error("文章参数校验错误")
-    ctx.app.emit("error", articleVerifyError, ctx)
+    return ctx.app.emit("error", throwError(ERRORCODE.ARTICLE, "文章参数校验错误"), ctx)
   }
 
   await next()
 }
 
 module.exports = {
-  verifyParam,
+  verifyArticleParam,
   removeRepeatArticleTag,
 }
