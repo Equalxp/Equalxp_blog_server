@@ -25,8 +25,15 @@ CREATE TABLE `blog_article`  (
   `view_times` int(0) NULL DEFAULT 0 COMMENT '文章访问次数',
   `article_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述信息 不能为空',
   `thumbs_up_times` int(0) NULL DEFAULT 0 COMMENT '文章点赞次数',
+  `reading_duration` double NULL DEFAULT 0 COMMENT '文章阅读时长',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_article
+-- ----------------------------
+INSERT INTO `blog_article` VALUES (1, 'git常用方法', 1, 1, '# git常用方法\n\n## 克隆\n\n```git\ngit clone 仓库ssh/http地址\ngit clone http://......git -b -dev // 拉取dev分支下的代码(正常情况下直接克隆仓库切换分支就行了)\n```\n\n## 使用git提交代码 git bash 或者 终端都可以\n\n```git\n1. 当前代码需要设置git的用户名、用户和邮箱，提交代码的时候会判断\n	git config --global user.name \"\"\n	git config --global user.email \"\"\n2. 在需要提交代码的文件下，打开终端或git bash\n3. 将文件存入暂存区\n	git add .\n4. 提交注释 \n	git commit -m \"注释内容\"\n5. 拉取远端代码(防止有冲突)\n	git pull origin master\n6. 推送远端\n	git push origin master\n```\n\n## Vscode 使用 git 提交代码\n\n```git\n1.在vscode左侧菜单栏搜索图标下面有一个源代码管理，里面会展示当前修改过的内容，根据提示操作即可提交，很方便\n```\n\n## 查看分支\n\n```git\n1.git branch // 查看本地分支\n2.git branch -r // 查看所有远端分支\n3.git branch -vv // 查看本地分支关联的远程分支\n```\n\n## 切换分支\n\n```git\n1.git checkout newBranch // 切换到分支newBranch下\n2.git checkout -b newBranch // 切换分支 并且新建分支\n```\n\n## 修改分支名称\n\n```git\n1.git branch -m oldBranchName newBranchName // 修改本地分支名称\n2.git push origin :oldBranchName // 将本地分支的远程分支删除\n3.git push --set-upstream origin newBranchName // 将改名后的本地分支推送到远端 并将本地分支与之关联\n```\n\n## git删除分支\n\n```git\n1.git branch --delete branchName // 删除本地分支\n2.git push origin --delete branchName // 删除远端分支\n```\n\n## 同步最新的主分支代码\n\n```git\n1.git checkout 主分支名 // 切换到主分支下\n2.git pull // 拉取代码\n3.修改冲突 \n4.git add . // 提交代码到本地\n5.git commit -m \"merge branch \'...\' into \'主分支名\'\" //提交做此操作的原因\n6.git checkout 分支名 // 切换到要更新的分支上\n7.git merge 主分支名 // 合并代码 \n```\n\n## 将其他分支代码提交 应用于其他分支\n\n```git\n1.git cherry-pick <commitHash> // commitHash就是提交以后显示的一串数字，可以通过git log查看 也可以去仓库提交记录看\n```\n\n## 当当前代码与远端出现冲突的时候\n\n```git\n1.git stash // 将自己的代码存入git缓存\n2.git pull // 拉取远端代码\n3.git stash pop // 将自己的代码从缓存中弹出\n4.解决冲突 提交代码\n```\n\n', 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f30d.jpg', 1, 1, 1, NULL, '2023-03-27 20:23:20', '2023-03-27 21:16:23', 4, '工作中经常会用到的git方法', 0, 0);
+INSERT INTO `blog_article` VALUES (2, ' vue2中keep-alive缓存机制', 1, 1, '# vue中keep-alive缓存机制\n\n在vueRouter中 给菜单指定keepAlive时 就能让页面第一次进入后缓存页面\n\n**不使用keep-alive时 钩子的执行顺序**\n\n```js\nbeforeRouterEnter --> created --> mounted --> destoryed\n```\n\n**使用keep-alive时 钩子的执行顺序**\n\n```js\n1、第一次进入缓存界面 beforeRouterEnter --> created --> mounted --> activated --> deactivated\n2、第二次进入缓存界面 beforeRouterEnter --> activated --> deactivated\n```\n\n如上所知，第二次进入页面不会执行created、mounted钩子，若需要获取信息的时候，就需要在beforeRouterEnter里获取数据\n\n这时就会发现一个问题，第一次请求时，beforeRouterEnter里请求了数据，created里也请求了数据(一般情况都是在created里请求数据) 就请求了两次 这个问题怎么解决呢？\n\n看以下代码\n\n```js\ncreated() {\n    console.log(1);\n  },\n  mounted() {\n    console.log(2);\n\n  },\n  beforeRouteEnter(to, from, next) {\n    console.log(3);\n    next(vm => {\n      console.log(4);\n    })\n  }\n```\n\n第一次进入代码执行顺序\n\n3  ->  1 -> 4 -> 2\n\n第二次进入代码执行顺序\n\n4 -> 2\n\n**解决方法:**\n\n虽然beforeCreatedEnter在created和mounted之前就执行了，但是next()的执行顺序却是在created之后，所以可以在created里获取数据的时候给一个flag= true，如果flag为真(created里获取了数据)，则next不做任何操作，若未获取数据，flag为假，则next里执行获取数据操作 这样就不会有获取数据重复的问题 记住每次执行完beforeCreatedEnter的时候将flag置为false，不置为false的话，下一次进入页面还是true，next和created里都不执行获取数据的操作 ', 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f30f.jpg', 2, 1, 1, NULL, '2023-03-27 20:46:57', '2023-03-29 15:37:13', 13, 'keepALive的生命周期，以及如何处理数据获取重复的问题', 0, 0);
 
 -- ----------------------------
 -- Table structure for blog_article_tag
@@ -39,7 +46,14 @@ CREATE TABLE `blog_article_tag`  (
   `createdAt` datetime(0) NULL DEFAULT NULL,
   `updatedAt` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 170 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_article_tag
+-- ----------------------------
+INSERT INTO `blog_article_tag` VALUES (4, 1, 1, '2023-03-27 20:44:18', '2023-03-27 20:44:18');
+INSERT INTO `blog_article_tag` VALUES (5, 2, 2, '2023-03-27 20:46:57', '2023-03-27 20:46:57');
+INSERT INTO `blog_article_tag` VALUES (6, 2, 3, '2023-03-27 20:46:57', '2023-03-27 20:46:57');
 
 -- ----------------------------
 -- Table structure for blog_category
@@ -66,7 +80,12 @@ CREATE TABLE `blog_category`  (
   UNIQUE INDEX `category_name_13`(`category_name`) USING BTREE,
   UNIQUE INDEX `category_name_14`(`category_name`) USING BTREE,
   UNIQUE INDEX `category_name_15`(`category_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_category
+-- ----------------------------
+INSERT INTO `blog_category` VALUES (1, '前端', '2023-03-27 20:23:20', '2023-03-27 20:23:20');
 
 -- ----------------------------
 -- Table structure for blog_config
@@ -91,6 +110,11 @@ CREATE TABLE `blog_config`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of blog_config
+-- ----------------------------
+INSERT INTO `blog_config` VALUES (1, '小张的博客', 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f309.png', 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f308.jpg', NULL, NULL, 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f30a.png', 'http://127.0.0.1:8888/d8d3fc1fc0890b592e0f7f30b.png', NULL, 'https://gitee.com/mrzym', NULL, 36, '2023-03-27 20:07:39', '2023-03-29 15:38:12');
+
+-- ----------------------------
 -- Table structure for blog_photo
 -- ----------------------------
 DROP TABLE IF EXISTS `blog_photo`;
@@ -102,7 +126,15 @@ CREATE TABLE `blog_photo`  (
   `createdAt` datetime(0) NULL DEFAULT NULL,
   `updatedAt` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_photo
+-- ----------------------------
+INSERT INTO `blog_photo` VALUES (1, 1, 'http://127.0.0.1:8888/229f289e51de1bfd23e1bc601.26.jpg', 1, '2023-03-27 16:56:58', '2023-03-27 16:56:58');
+INSERT INTO `blog_photo` VALUES (2, 1, 'http://127.0.0.1:8888/229f289e51de1bfd23e1bc602.jpg', 1, '2023-03-27 16:56:58', '2023-03-27 16:56:58');
+INSERT INTO `blog_photo` VALUES (3, 1, 'http://127.0.0.1:8888/229f289e51de1bfd23e1bc603.jpg', 1, '2023-03-27 16:56:58', '2023-03-27 16:56:58');
+INSERT INTO `blog_photo` VALUES (4, 1, 'http://rs8h1phj4.hn-bkt.clouddn.com/Fu-0BM3xnlc44aFYUHX15CZo7bLE', 1, '2023-03-29 17:06:54', '2023-03-29 17:06:54');
 
 -- ----------------------------
 -- Table structure for blog_photo_album
@@ -116,7 +148,12 @@ CREATE TABLE `blog_photo_album`  (
   `updatedAt` datetime(0) NULL DEFAULT NULL,
   `album_cover` varchar(555) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '相册封面',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_photo_album
+-- ----------------------------
+INSERT INTO `blog_photo_album` VALUES (1, '日常', '随手拍拍', '2023-03-27 16:56:30', '2023-03-30 17:01:41', 'http://rs8h1phj4.hn-bkt.clouddn.com/Fh5VViUMwdOi_Rx_ObrrEFrAakVm');
 
 -- ----------------------------
 -- Table structure for blog_tag
@@ -152,7 +189,14 @@ CREATE TABLE `blog_tag`  (
   UNIQUE INDEX `tag_name_22`(`tag_name`) USING BTREE,
   UNIQUE INDEX `tag_name_23`(`tag_name`) USING BTREE,
   UNIQUE INDEX `tag_name_24`(`tag_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_tag
+-- ----------------------------
+INSERT INTO `blog_tag` VALUES (1, 'git', '2023-03-27 20:23:20', '2023-03-27 20:23:20');
+INSERT INTO `blog_tag` VALUES (2, 'vue2', '2023-03-27 20:46:57', '2023-03-27 20:46:57');
+INSERT INTO `blog_tag` VALUES (3, 'keepAlive', '2023-03-27 20:46:57', '2023-03-27 20:46:57');
 
 -- ----------------------------
 -- Table structure for blog_user
@@ -189,6 +233,11 @@ CREATE TABLE `blog_user`  (
   UNIQUE INDEX `username_19`(`username`) USING BTREE,
   UNIQUE INDEX `username_20`(`username`) USING BTREE,
   UNIQUE INDEX `username_21`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of blog_user
+-- ----------------------------
+INSERT INTO `blog_user` VALUES (1, 'admin', '$2a$10$KCvrnEVadjM62es5.8MROetTG7cZZNUC/XC/z.gz9.aBwd5GTxaR2', 1, '尊贵的系统管理员', 'http://127.0.0.1:8888/229f289e51de1bfd23e1bc607.jpg', '2023-03-27 16:52:16', '2023-03-27 17:18:10');
 
 SET FOREIGN_KEY_CHECKS = 1;
