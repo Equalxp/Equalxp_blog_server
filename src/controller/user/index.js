@@ -3,6 +3,9 @@ const { JWT_SECRET } = require("../../config/config.default")
 const { createUser, updateOwnUserInfo, getOneUserInfo, updatePassword, updateRole, getUserList, adminUpdateUserInfo } = require("../../service/user/index")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.USER
+
+const { UPLOADTYPE } = require("../../config/config.default")
+const { deleteImgs } = require("../../utils/qiniuUpload")
 class userController {
   /**
    * 用户注册
@@ -26,6 +29,14 @@ class userController {
   async updateOwnUserInfo(ctx) {
     try {
       const { id } = ctx.state.user
+
+      const { avatar } = ctx.request.body
+
+      let one = await getOneUserInfo({ id })
+      // 服务器删除原来的头像
+      if (UPLOADTYPE == "qiniu" && one.avatar && one.avatar != avatar) {
+        await deleteImgs([one.avatar.split("/").pop()])
+      }
       const res = await updateOwnUserInfo(id, ctx.request.body)
 
       ctx.body = result("修改用户成功", res)
@@ -120,6 +131,13 @@ class userController {
    */
   async adminUpdateUserInfo(ctx) {
     try {
+      const { id, avatar } = ctx.request.body
+      let one = await getOneUserInfo({ id })
+      // 服务器删除原来的头像
+      if (UPLOADTYPE == "qiniu" && one.avatar && one.avatar != avatar) {
+        await deleteImgs([one.avatar.split("/").pop()])
+      }
+
       let res = await adminUpdateUserInfo(ctx.request.body)
       ctx.body = result("修改用户信息成功", res)
     } catch (err) {

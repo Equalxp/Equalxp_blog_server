@@ -4,11 +4,14 @@ const { deleteArticleTag } = require("../../service/article/articleTag")
 const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic,
   getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList,
   getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent,
-  getHotArticle, articleThumbsUp, addReadingDuration } = require("../../service/article/index")
+  getHotArticle, articleThumbsUp, addReadingDuration, getArticleCoverById } = require("../../service/article/index")
 const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
+
+const { UPLOADTYPE } = require("../../config/config.default")
+const { deleteImgs } = require("../../utils/qiniuUpload")
 
 class ArticleController {
   /**
@@ -48,8 +51,12 @@ class ArticleController {
   async updateArticle(ctx) {
     const t = await seq.transaction()
     try {
-      console.log(ctx.request.body)
       const { tagList, category, ...articleRest } = ctx.request.body.article
+      let oldCover = await getArticleCoverById(articleRest.id)
+      // 服务器删除图片
+      if (UPLOADTYPE == "qiniu" && oldCover && oldCover != articleRest.article_cover) {
+        await deleteImgs([oldCover.split("/").pop()])
+      }
       // 先删除这个文章与标签之前的关联
       await deleteArticleTag(articleRest.id)
       // 判断新的分类是新增的还是已经存在的 并且返回分类id
@@ -94,6 +101,14 @@ class ArticleController {
   async deleteArticle(ctx) {
     try {
       const { id, status } = ctx.params
+      if (UPLOADTYPE == "qiniu") {
+        if (Number(status) === 3) {
+          let oldCover = await getArticleCoverById(id)
+          // 服务器删除图片
+          oldCover ? await deleteImgs([oldCover.split("/").pop()]) : ""
+        }
+      }
+
       let res = await deleteArticle(id, status)
 
       ctx.body = result("删除文章成功", res)

@@ -564,6 +564,14 @@ class ArticleService {
 
     return article ? true : false
   }
+
+  /**
+   * 根据文章获取文章封面
+   */
+  async getArticleCoverById(id) {
+    let res = await Article.findByPk(id)
+    return res.article_cover
+  }
 }
 
 module.exports = new ArticleService()

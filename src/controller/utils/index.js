@@ -7,7 +7,7 @@ const errorCodeConfig = ERRORCODE.CONFIG
 const { updateConfig, getConfig, addView } = require("../../service/config/index")
 
 const fs = require("fs")
-const { upToQiniu } = require("../../utils/qiniuUpload")
+const { upToQiniu, deleteImgs } = require("../../utils/qiniuUpload")
 const { UPLOADTYPE, BASEURL } = require("../../config/config.default")
 
 class UtilsController {
@@ -42,6 +42,27 @@ class UtilsController {
   // 修改网站设置
   async updateConfig(ctx) {
     try {
+      let config = await getConfig()
+      // 如果背景图不一致，删除原来的
+      const { avatar_bg, blog_avatar } = ctx.request.body
+      // const { qq_link, we_chat_link } = ctx.request.body
+
+      if (UPLOADTYPE == "qiniu") {
+        if (avatar_bg && config.avatar_bg && avatar_bg != config.avatar_bg) {
+          await deleteImgs([config.avatar_bg.split("/").pop()])
+        }
+        if (blog_avatar && config.blog_avatar && blog_avatar != config.blog_avatar) {
+          await deleteImgs([config.blog_avatar.split("/").pop()])
+        }
+        // if (qq_link && config.qq_link && qq_link != config.qq_link) {
+        //   await deleteImgs([config.qq_link.split("/").pop()])
+        // }
+        // if (we_chat_link && config.we_chat_link && we_chat_link != config.we_chat_link) {
+        //   await deleteImgs([config.we_chat_link.split("/").pop()])
+        // }
+      }
+
+
       let res = await updateConfig(ctx.request.body)
 
       ctx.body = result("修改网站设置成功", res)

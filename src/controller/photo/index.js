@@ -2,6 +2,8 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.PHOTO
 
 const { addPhotos, deletePhotos, getPhotosByAlbumId, revertPhotos, getAllPhotosByAlbumId } = require("../../service/photo/index")
+const { UPLOADTYPE } = require("../../config/config.default")
+const { deleteImgs } = require("../../utils/qiniuUpload")
 
 class PhotoController {
   /**
@@ -24,9 +26,15 @@ class PhotoController {
    */
   async deletePhotos(ctx) {
     try {
-      const { idList, type } = ctx.request.body
+      const { imgList, type } = ctx.request.body
+      let idList = imgList.map(v => v.id)
       const res = await deletePhotos(idList, type)
 
+      // 远程删除图片
+      let keys = imgList.map(v => v.url.split("/").pop())
+      if (UPLOADTYPE == "qiniu" && type == 2) {
+        await deleteImgs(keys)
+      }
       ctx.body = result("删除图片成功", res)
     } catch (err) {
       console.error(err)
@@ -63,6 +71,9 @@ class PhotoController {
     }
   }
 
+  /**
+   * 获取相册的所有照片
+   */
   async getAllPhotosByAlbumId(ctx) {
     try {
       const res = await getAllPhotosByAlbumId(ctx.params.id)

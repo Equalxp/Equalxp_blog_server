@@ -2,6 +2,8 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.PHOTOALBUM
 
 const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getOneAlbum } = require("../../service/photoAlbum/index")
+const { UPLOADTYPE } = require("../../config/config.default")
+const { deleteImgs } = require("../../utils/qiniuUpload")
 
 class PhotoAlbumController {
   /**
@@ -29,6 +31,10 @@ class PhotoAlbumController {
   async deleteAlbum(ctx) {
     try {
       const { id } = ctx.params
+      let one = await getOneAlbum({ id })
+      if (UPLOADTYPE == "qiniu") {
+        await deleteImgs([one.album_cover.split("/").pop()])
+      }
       const res = await deleteAlbum(id)
 
       ctx.body = result("删除相册成功", res)
@@ -43,12 +49,18 @@ class PhotoAlbumController {
    */
   async updateAlbum(ctx) {
     try {
-      const { id, album_name } = ctx.request.body
+      const { id, album_name, album_cover } = ctx.request.body
 
       let one = await getOneAlbum({ album_name })
       if (one && one.id != id) {
         return ctx.app.emit("error", throwError(errorCode, "已经存在相同的相册名称，换一个试试"), ctx)
       }
+
+      // 删除原来存储的照片
+      if (UPLOADTYPE == "qiniu" && album_cover != one.album_cover) {
+        await deleteImgs([one.album_cover.split("/").pop()])
+      }
+
       const res = await updateAlbum(ctx.request.body)
 
       ctx.body = result("修改相册成功", res)
