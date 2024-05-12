@@ -553,6 +553,18 @@ class ArticleService {
 
     return article ? true : false
   }
+
+  /**
+   * 增加文章阅读时长
+   */
+  async addReadingDuration(id, duration) {
+    let article = await Article.findByPk(id)
+    if (article) {
+      await article.increment("reading_duration", { by: duration })
+    }
+
+    return article ? true : false
+  }
 }
 
 module.exports = new ArticleService()

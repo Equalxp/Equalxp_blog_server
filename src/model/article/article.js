@@ -74,6 +74,12 @@ const Article = seq.define(
       defaultValue: 0,
       comment: "文章点赞次数",
     },
+    reading_duration: {
+      type: DataTypes.DOUBLE,
+      require: false,
+      defaultValue: 0,
+      comment: "文章阅读时长",
+    },
     createdAt: {
       type: Sequelize.DATE,
       get() {

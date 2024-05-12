@@ -1,7 +1,10 @@
 const seq = require("../../db/seq")
 
 const { deleteArticleTag } = require("../../service/article/articleTag")
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent, getHotArticle, articleThumbsUp } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic,
+  getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList,
+  getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent,
+  getHotArticle, articleThumbsUp, addReadingDuration } = require("../../service/article/index")
 const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
@@ -296,6 +299,19 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "点赞失败"), ctx)
+    }
+  }
+  /**
+   * 增加文章阅读时长接口
+   */
+  async addReadingDuration(ctx) {
+    try {
+      const { id, duration } = ctx.params
+      let res = await addReadingDuration(id, duration)
+      ctx.body = result("增加阅读时长成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "增加阅读时长失败"), ctx)
     }
   }
 }

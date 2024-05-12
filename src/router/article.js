@@ -4,7 +4,11 @@ const { auth, adminAuth } = require("../middleware/auth/index")
 
 const router = new Router({ prefix: "/article" })
 
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent, getHotArticle, articleThumbsUp } = require("../controller/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle,
+  toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById,
+  blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId,
+  getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent,
+  getHotArticle, articleThumbsUp, addReadingDuration } = require("../controller/article/index")
 
 const { verifyArticleParam, verifyTopParam, verifyDelParam, updateJudgeTitleExist, createJudgeTitleExist } = require("../middleware/article/index")
 
@@ -58,6 +62,9 @@ router.get("/getHotArticle", getHotArticle)
 
 // 文章点赞
 router.put("/thumbsUp/:id", articleThumbsUp)
+
+// 增加文章阅读时长 毫秒
+router.put("/addReadingDuration/:id/:duration", addReadingDuration)
 
 /** 前台 end */
 
