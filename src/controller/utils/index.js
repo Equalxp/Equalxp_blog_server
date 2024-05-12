@@ -6,16 +6,27 @@ const errorCodeConfig = ERRORCODE.CONFIG
 
 const { updateConfig, getConfig, addView } = require("../../service/config/index")
 
+const fs = require("fs")
+const { upToQiniu } = require("../../utils/qiniuUpload")
+
 class UtilsController {
-  // 文件上传
+  // 图片上传
   async upload(ctx) {
-    console.log(ctx.request)
     const { file } = ctx.request.files
 
     if (file) {
-      ctx.body = result("图片上传成功", {
-        imgName: path.basename(file.filepath),
-      })
+      // 创建文件可读流
+      const reader = fs.createReadStream(file.filepath)
+      // 命名文件
+      const fileUrl = file.name
+      // 调用方法上传到qiniu
+      const res = await upToQiniu(reader, fileUrl)
+      if (res) {
+        ctx.body = result("图片上传成功", {
+          result: res,
+        })
+      }
+
     } else {
       return ctx.app.emit("error", throwError(errorCodeUpload, "文件上传失败"))
     }

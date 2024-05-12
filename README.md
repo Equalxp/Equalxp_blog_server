@@ -1,4 +1,4 @@
-# AstroBlog
+# EqualBlog
 
 #### 介绍
 博客
