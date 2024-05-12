@@ -131,6 +131,19 @@ class UserService {
     let res = await User.count()
     return res
   }
+
+  // 管理员修改用户信息
+  async adminUpdateUserInfo({ id, nick_name, avatar }) {
+    let res = await User.update(
+      { nick_name, avatar },
+      {
+        where: {
+          id,
+        },
+      }
+    )
+    return res[0] > 0 ? true : false
+  }
 }
 
 module.exports = new UserService()

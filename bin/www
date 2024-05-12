@@ -13,7 +13,7 @@ var http = require("http")
  */
 const { APP_PORT } = require("../src/config/config.default")
 var port = normalizePort(APP_PORT || "3000")
-// app.set('port', port);
+// app.set('port', port)
 
 /**
  * Create HTTP server.
