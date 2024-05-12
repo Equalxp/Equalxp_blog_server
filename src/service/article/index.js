@@ -33,6 +33,7 @@ class ArticleService {
       res = await Article.update(article, {
         where: {
           id: article.id,
+          status: 1,
         },
       })
     } catch (err) {
@@ -401,6 +402,7 @@ class ArticleService {
       limit,
       where: {
         category_id,
+        status: 1,
       },
       attributes: ["id", "article_title", "article_cover", "createdAt"],
       order: [["createdAt", "DESC"]],
@@ -425,6 +427,7 @@ class ArticleService {
         id: {
           [Op.lt]: article_id,
         },
+        status: 1,
       },
       attributes: ["id", "article_title", "article_cover"],
       order: [["id", "DESC"]],
@@ -435,6 +438,7 @@ class ArticleService {
         id: {
           [Op.gt]: article_id,
         },
+        status: 1,
       },
       attributes: ["id", "article_title", "article_cover"],
       order: [["id", "ASC"]],
@@ -445,6 +449,7 @@ class ArticleService {
       contextPrevious = await Article.findOne({
         where: {
           id: article_id,
+          status: 1,
         },
         attributes: ["id", "article_title", "article_cover"],
       })
@@ -481,7 +486,11 @@ class ArticleService {
    *  获取文章总数
    */
   async getArticleCount() {
-    let res = await Article.count()
+    let res = await Article.count({
+      where: {
+        status: 1,
+      },
+    })
     return res
   }
 
@@ -493,7 +502,8 @@ class ArticleService {
       where: {
         article_content: {
           [Op.like]: `%${content}%`
-        }
+        },
+        status: 1,
       },
       // 查找指定属性
       attributes: ["id", "article_title", "article_content", "view_times"],
@@ -505,8 +515,8 @@ class ArticleService {
       res.forEach(r => {
         let { id, article_content, article_title } = r.dataValues
         let index = article_content.search(content)
-        let previous = index - 8 > 0 ? index - 8 : index
-        let next = index + content.length + 8
+        let previous = index
+        let next = index + content.length + 12
         result.push({
           id,
           article_content: article_content.substring(previous, next),
@@ -514,6 +524,22 @@ class ArticleService {
         })
       })
     return result
+  }
+
+  /**
+  * 获取热门文章
+  */
+  async getHotArticle() {
+    let res = await Article.findAll({
+      where: {
+        status: 1,
+      },
+      attributes: ["id", "article_title", "view_times"],
+      limit: 5,
+      order: [["view_times", "DESC"]],
+    })
+
+    return res
   }
 }
 

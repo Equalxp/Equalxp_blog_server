@@ -106,7 +106,7 @@ class userController {
    */
   async getUserInfo(ctx) {
     try {
-      let res = await getOneUserInfo(ctx.state.user.id)
+      let res = await getOneUserInfo({ id: ctx.state.user.id })
       const { id, role, password, username, ...resInfo } = res
       ctx.body = result("获取用户信息成功", resInfo)
     } catch (err) {
