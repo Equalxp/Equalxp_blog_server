@@ -49,7 +49,6 @@ class ArticleService {
    * @returns boolean
    */
   async updateTop(id, is_top) {
-    is_top = Number(is_top) === 2 ? 1 : 2
     let res = await Article.update(
       {
         is_top,
@@ -274,7 +273,7 @@ class ArticleService {
 
     const { count, rows } = await Article.findAndCountAll({
       order: [
-        ["is_top", "DESC"],
+        ["is_top", "ASC"],
         ["createdAt", "DESC"],
       ],
       attributes: { exclude: ["article_content", "origin_url"] },

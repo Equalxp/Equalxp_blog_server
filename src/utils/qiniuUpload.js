@@ -4,6 +4,10 @@ let qiniu = require("qiniu") // 需要加载qiniu模块的
 const { ACCESSKEY, SECRETKEY, BUCKET } = require("../config/config.default")
 // ORIGIN cdn域名
 
+const mac = new qiniu.auth.digest.Mac(ACCESSKEY, SECRETKEY)
+const config = new qiniu.conf.Config()
+const bucketManager = new qiniu.rs.BucketManager(mac, config)
+
 const upToQiniu = (filePath, key) => {
   const accessKey = ACCESSKEY // AK密钥
   const secretKey = SECRETKEY // SK密钥
@@ -38,6 +42,33 @@ const upToQiniu = (filePath, key) => {
   })
 }
 
+const deleteImgs = imgList => {
+  let deleteOperations = []
+  imgList.forEach(v => {
+    deleteOperations.push(qiniu.rs.deleteOp(BUCKET, v))
+  })
+  bucketManager.batch(deleteOperations, function (err, respBody, respInfo) {
+    if (err) {
+      console.log(err)
+      //throw err;
+    } else {
+      // 200 is success, 298 is part success
+      if (parseInt(respInfo.statusCode / 100) == 2) {
+        respBody.forEach(function (item) {
+          if (item.code == 200) {
+            console.log(item.code + "\tsuccess")
+          } else {
+            console.log(item.code + "\t" + item.data.error)
+          }
+        })
+      } else {
+        console.log(respInfo.deleteusCode)
+        console.log(respBody)
+      }
+    }
+  })
+}
 module.exports = {
+  deleteImgs,
   upToQiniu,
 }
