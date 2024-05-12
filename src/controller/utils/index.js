@@ -8,6 +8,7 @@ const { updateConfig, getConfig, addView } = require("../../service/config/index
 
 const fs = require("fs")
 const { upToQiniu } = require("../../utils/qiniuUpload")
+const { UPLOADTYPE, BASEURL } = require("../../config/config.default")
 
 class UtilsController {
   // 图片上传
@@ -15,15 +16,21 @@ class UtilsController {
     const { file } = ctx.request.files
 
     if (file) {
-      // 创建文件可读流
-      const reader = fs.createReadStream(file.filepath)
-      // 命名文件
-      const fileUrl = file.name
-      // 调用方法上传到qiniu
-      const res = await upToQiniu(reader, fileUrl)
-      if (res) {
+      if (UPLOADTYPE == "qiniu") {
+        // 创建文件可读流
+        const reader = fs.createReadStream(file.filepath)
+        // 命名文件
+        const fileUrl = file.name
+        // 调用方法
+        const res = await upToQiniu(reader, fileUrl)
+        if (res) {
+          ctx.body = result("图片上传成功", {
+            url: BASEURL + res.hash,
+          })
+        }
+      } else {
         ctx.body = result("图片上传成功", {
-          result: res,
+          url: "http://127.0.0.1:8888/" + path.basename(file.filepath),
         })
       }
 

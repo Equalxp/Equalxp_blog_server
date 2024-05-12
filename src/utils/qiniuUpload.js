@@ -1,7 +1,7 @@
 // 上传到qiniu云
 let qiniu = require("qiniu") // 需要加载qiniu模块的
 
-const { ACCESSKEY, SECRETKEY, BUCKET, ORIGIN } = require("../config/config.default")
+const { ACCESSKEY, SECRETKEY, BUCKET } = require("../config/config.default")
 // ORIGIN cdn域名
 
 const upToQiniu = (filePath, key) => {
