@@ -1,7 +1,7 @@
 const seq = require("../../db/seq")
 
 const { deleteArticleTag } = require("../../service/article/articleTag")
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent, getHotArticle } = require("../../service/article/index")
+const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent, getHotArticle, articleThumbsUp } = require("../../service/article/index")
 const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
@@ -283,6 +283,19 @@ class ArticleController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "获取热门文章失败"), ctx)
+    }
+  }
+
+  /**
+   * 文章点赞功能
+   */
+  async articleThumbsUp(ctx) {
+    try {
+      const { id } = ctx.params
+      let res = await articleThumbsUp(id)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "点赞失败"), ctx)
     }
   }
 }

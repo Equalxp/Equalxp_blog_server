@@ -541,6 +541,18 @@ class ArticleService {
 
     return res
   }
+
+  /**
+   * 文章点赞
+   */
+  async articleThumbsUp(id) {
+    let article = await Article.findByPk(id)
+    if (article) {
+      await article.increment("thumbs_up_times", { by: 1 })
+    }
+
+    return article ? true : false
+  }
 }
 
 module.exports = new ArticleService()
