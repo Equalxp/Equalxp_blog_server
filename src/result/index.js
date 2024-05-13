@@ -12,6 +12,8 @@ const ERRORCODE = {
   TALK: "100011", // 说说
   MESSAGE: "100012", // 留言
   RECOMMEND: "100012", // 推荐
+  HEADER: "100013", // 背景图
+  LINKS: "100014", // 友链
 }
 
 /**

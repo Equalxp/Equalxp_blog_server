@@ -18,7 +18,8 @@ class UserService {
       role = 2
     }
     // 随机生成昵称
-    nick_name = nick_name ? nick_name : randomNickname("小白")
+    nick_name = nick_name ? nick_name : randomNickname("小罗")
+    const avatar = "http://img.mrzym.top/Fkqgaotv3_iQoz5bGJGsoWl2oo7x";
     const res = await User.create({ username, password, nick_name, role })
 
     return res.dataValues

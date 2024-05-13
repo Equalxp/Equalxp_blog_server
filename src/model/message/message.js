@@ -22,6 +22,11 @@ const Message = seq.define(
       require: true,
       comment: "昵称",
     },
+    avatar: {
+      type: DataTypes.STRING(555),
+      require: true,
+      comment: "头像",
+    },
     type: {
       type: DataTypes.STRING, // STRING 默认255
       require: true,
@@ -45,6 +50,6 @@ const Message = seq.define(
   }
 )
 
-Message.sync({ alter: true }) //同步数据表
+// Message.sync({ alter: true }) //同步数据表
 
 module.exports = Message

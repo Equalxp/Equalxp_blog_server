@@ -2,7 +2,7 @@ const Config = require("../../model/config/config")
 /**
  * 分类服务层
  */
-class CategoryService {
+class ConfigService {
   async updateConfig(config) {
     const { id } = config
     let one = await Config.findByPk(id)
@@ -35,4 +35,4 @@ class CategoryService {
   }
 }
 
-module.exports = new CategoryService()
+module.exports = new ConfigService()
