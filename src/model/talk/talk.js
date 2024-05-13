@@ -12,6 +12,16 @@ const Talk = seq.define(
       require: true,
       comment: "说说内容",
     },
+    nick_name: {
+      type: DataTypes.STRING(255),
+      require: true,
+      comment: "发说说的人",
+    },
+    avatar: {
+      type: DataTypes.STRING(555),
+      require: true,
+      comment: "头像",
+    },
     status: {
       type: DataTypes.INTEGER,
       require: true,

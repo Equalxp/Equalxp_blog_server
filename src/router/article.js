@@ -4,16 +4,62 @@ const { auth, adminAuth } = require("../middleware/auth/index")
 
 const router = new Router({ prefix: "/article" })
 
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle,
-  toggleArticlePublic, getArticleList, getArticleInfoByTitle, getArticleById,
-  blogHomeGetArticleList, blogTimelineGetArticleList, getArticleListByTagId,
-  getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent,
-  getHotArticle, articleThumbsUp, addReadingDuration } = require("../controller/article/index")
+const {
+  createArticle,
+  updateArticle,
+  updateTop,
+  deleteArticle,
+  revertArticle,
+  toggleArticlePublic,
+  getArticleList,
+  getArticleInfoByTitle,
+  getArticleById,
+  blogHomeGetArticleList,
+  blogTimelineGetArticleList,
+  getArticleListByTagId,
+  getArticleListByCategoryId,
+  getRecommendArticleById,
+  getArticleListByContent,
+  getHotArticle,
+  articleThumbsUp,
+  addReadingDuration,
+} = require("../controller/article/index")
 
 const { verifyArticleParam, verifyTopParam, verifyDelParam, updateJudgeTitleExist, createJudgeTitleExist } = require("../middleware/article/index")
 
+const { updateUrl } = require("../service/article/index")
+const { genOpenApiMark } = require("../utils/swagger.js")
+
 /** 后台 start */
 // 创建文章
+genOpenApiMark("/add", {
+  post: {
+    description: "添加文章",
+    summary: "添加文章",
+    tags: ["文章"],
+    requestBody: {
+      content: {
+        "application/json": {
+          schema: {
+            properties: {
+              pid: {
+                description: "评论的父级节点",
+                type: "string",
+                require: true,
+              },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      res: {
+        code: 0,
+        message: "新增成功.",
+      },
+    },
+  },
+})
 router.post("/add", auth, adminAuth, verifyArticleParam, createJudgeTitleExist, createArticle)
 
 // 修改文章
@@ -72,5 +118,7 @@ router.put("/addReadingDuration/:id/:duration", addReadingDuration)
 // 根据id获取文章详情
 router.get("/getArticleById/:id", getArticleById)
 /** 公共 end */
+
+router.post("/updateUrl", updateUrl)
 
 module.exports = router

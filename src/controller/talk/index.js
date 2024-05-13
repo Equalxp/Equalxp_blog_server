@@ -97,9 +97,9 @@ class TalkController {
    */
   async getTalkList(ctx) {
     try {
-      const { current, size, status, is_top } = ctx.request.body
+      const { current, size, status } = ctx.request.body
 
-      let res = await getTalkList(current, size, status, is_top)
+      let res = await getTalkList(current, size, status)
       ctx.body = result("获取说说列表成功", res)
     } catch (err) {
       console.error(err)

@@ -161,7 +161,7 @@ class TalkService {
     }
   }
 
-  // 根据id获取文章详情
+  // 根据id获取说说详情
   async getTalkById(id) {
     let res = await Talk.findByPk(id)
 
@@ -169,7 +169,7 @@ class TalkService {
 
     return {
       ...res.dataValues,
-      talkImgList: imgs.map(v => v.url),
+      talkImgList: imgs.length ? imgs.map(v => v.url) : [],
     }
   }
 

@@ -5,6 +5,18 @@ const { getAuthorNameById } = require("../user/index")
 const { Op } = require("sequelize")
 
 class ArticleService {
+  // 替换url
+  async updateUrl() {
+    let res = await Article.findAll()
+    res.forEach(async v => {
+      v.dataValues.article_cover = v.dataValues.article_cover.replace('http://rs8h1phj4.hn-bkt.clouddn.com/', 'http://img.mrzym.top/')
+      await Config.update(v.dataValues, {
+        where: {
+          id: v.dataValues.id
+        }
+      })
+    })
+  }
   /**
    * 新增文章
    * @param {*} article
