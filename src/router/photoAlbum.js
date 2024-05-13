@@ -1,7 +1,7 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/photoAlbum" })
 
-const { addAlbum, deleteAlbum, updateAlbum, getAlbumList } = require("../controller/photoAlbum/index")
+const { auth, adminAuth } = require("../middleware/auth/index")
 const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getAllAlbumList } = require("../controller/photoAlbum/index")
 
 // 新增相册

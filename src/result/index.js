@@ -9,6 +9,9 @@ const ERRORCODE = {
   STATISTIC: "100008",
   PHOTOALBUM: "100009",
   PHOTO: "100010",
+  TALK: "100011", // 说说
+  MESSAGE: "100012", // 留言
+  RECOMMEND: "100012", // 推荐
 }
 
 /**

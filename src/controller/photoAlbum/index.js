@@ -1,7 +1,7 @@
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.PHOTOALBUM
 
-const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getOneAlbum } = require("../../service/photoAlbum/index")
+const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getOneAlbum, getAllAlbumList } = require("../../service/photoAlbum/index")
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
 
@@ -82,6 +82,20 @@ class PhotoAlbumController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "获取相册列表失败"), ctx)
+    }
+  }
+
+  /**
+   * 获取相册列表
+   */
+  async getAllAlbumList(ctx) {
+    try {
+      const res = await getAllAlbumList()
+
+      ctx.body = result("获取所有相册列表成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取所有相册列表失败"), ctx)
     }
   }
 }

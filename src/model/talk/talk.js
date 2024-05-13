@@ -2,25 +2,27 @@ const { DataTypes } = require("sequelize")
 const { Sequelize } = require("sequelize")
 var moment = require("moment")
 
-const seq = require('../../db/seq')
+const seq = require("../../db/seq")
 
-const PhotoAlbum = seq.define(
-  "blog_photo_album",
+const Talk = seq.define(
+  "blog_talk",
   {
-    album_name: {
-      type: DataTypes.STRING(26),
+    content: {
+      type: DataTypes.STRING(255),
       require: true,
-      comment: "相册名称",
+      comment: "说说内容",
     },
-    album_cover: {
-      type: DataTypes.STRING(555),
+    status: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "相册封面",
+      defaultValue: 1,
+      comment: "说说状态 1 公开 2 私密 3 回收站",
     },
-    description: {
-      type: DataTypes.STRING(55),
+    is_top: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "相册描述信息",
+      defaultValue: 2,
+      comment: "是否置顶 1 置顶 2 不置顶",
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -40,6 +42,6 @@ const PhotoAlbum = seq.define(
   }
 )
 
-//Photo.sync({ alter: true }) // 同步数据库表
+// Talk.sync({ alter: true }) // 同步数据库表
 
-module.exports = PhotoAlbum 
+module.exports = Talk
