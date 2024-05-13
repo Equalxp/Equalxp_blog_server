@@ -2,6 +2,8 @@ const { createComment, applyComment, thumbUpComment, cancelThumbUp, deleteCommen
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.CATEGORY
+const { addNotify } = require("../notify/index")
+
 /**
  * 评论控制器
  */
@@ -13,6 +15,16 @@ class CommentController {
     try {
       let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
       let res = await createComment({ ...ctx.request.body, ip: ip.split(":").pop() })
+      const { talk_id, from_name, from_id, article_id, content } = ctx.request.body
+      if (from_id != 1) {
+        await addNotify({
+          user_id: 1,
+          type: talk_id ? 2 : 1,
+          to_id: talk_id ? talk_id : article_id,
+          message: `您的${talk_id ? "说说" : "文章"}收到了来自于：${from_name} 的评论: ${content}！`,
+        })
+      }
+
       ctx.body = result("新增评论成功", {
         res,
       })
@@ -30,6 +42,17 @@ class CommentController {
       let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
 
       let res = await applyComment({ ...ctx.request.body, ip: ip.split(":").pop() })
+      const { talk_id, from_name, content, from_id, article_id, to_id } = ctx.request.body
+
+      if (from_id != to_id) {
+        await addNotify({
+          user_id: to_id,
+          type: talk_id ? 2 : 1,
+          to_id: talk_id ? talk_id : article_id,
+          message: `您的收到了来自于：${from_name} 的评论回复: ${content}！`,
+        })
+      }
+
       ctx.body = result("回复评论成功", {
         res,
       })

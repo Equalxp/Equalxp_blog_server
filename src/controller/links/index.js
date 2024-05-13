@@ -9,8 +9,15 @@ class LinksController {
    */
   async addOrUpdateLinks(ctx) {
     try {
-      const { id } = ctx.request.body
+      const { id, site_name } = ctx.request.body
       const res = await addOrUpdateLinks(ctx.request.body)
+      if (!id) {
+        await addNotify({
+          user_id: 1,
+          type: 4, // 友链
+          message: `您的收到了来自于：${site_name} 的友链申请，点我去后台审核！`,
+        })
+      }
       const msg = id ? "修改" : "发布"
       ctx.body = result(msg + "友链成功", res)
     } catch (err) {

@@ -5,6 +5,10 @@ module.exports = (err, ctx) => {
       // 没有权限
       status = 403
       break
+    case "100016":
+      // token 过期 需要重新登录
+      status = 401;
+      break;
     default:
       status = 500
   }

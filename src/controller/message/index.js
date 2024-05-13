@@ -3,6 +3,7 @@ const errorCode = ERRORCODE.MESSAGE
 
 const { addMessage, deleteMessage, getMessageList } = require("../../service/message/index")
 const { randomNickname } = require("../../utils/tool")
+const { addNotify } = require("../notify/index")
 
 class MessageController {
   /**
@@ -11,11 +12,19 @@ class MessageController {
   async addMessage(ctx) {
     try {
       let { nick_name } = ctx.request.body
-      const { message, contact, type, avatar } = ctx.request.body
+      const { userId, message, contact, type, avatar } = ctx.request.body
       if (!nick_name) {
         nick_name = randomNickname("游客")
       }
       const res = await addMessage({ message, contact, type, nick_name, avatar })
+      // 发布消息推送
+      if (!userId || userId != 1) {
+        await addNotify({
+          user_id: 1,
+          type: 3,
+          message: `您收到了来自于：${nick_name} 的留言: ${message}！`,
+        });
+      }
       ctx.body = result("发布成功", res)
     } catch (err) {
       console.error(err)

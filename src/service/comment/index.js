@@ -125,7 +125,7 @@ class CommentService {
       offset,
       limit,
       where: whereOpt,
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "ASC"]],
     })
     rows.forEach((r) => {
       r.dataValues.ipAddress = getIpAddress(r.dataValues.ip)

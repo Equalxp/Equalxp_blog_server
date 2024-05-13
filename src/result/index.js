@@ -1,6 +1,6 @@
 const ERRORCODE = {
-  USER: "100001", // 错误码
-  AUTH: "100002",
+  USER: "100001", // 用户错误码
+  AUTH: "100002", // 主要是用户权限不足
   TAG: "100003",
   CATEGORY: "100004",
   ARTICLE: "100005",
@@ -15,6 +15,8 @@ const ERRORCODE = {
   HEADER: "100013", // 背景图
   LINKS: "100014", // 友链
   COMMENT: "100015", // 评论
+  AUTHTOKEN: "100016", // 用户登录过期
+  NOTIFY: "100017", // 消息推送
 }
 
 /**
