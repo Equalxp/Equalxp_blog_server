@@ -8,10 +8,10 @@ const seq = require('../../db/seq')
 const Header = seq.define(
   "blog_header",
   {
-    router_path: {
+    route_name: {
       type: DataTypes.STRING(555),
       require: true,
-      comment: "路由对应的页面路径",
+      comment: "路由名称",
     },
     bg_url: {
       type: DataTypes.STRING, // STRING 默认255

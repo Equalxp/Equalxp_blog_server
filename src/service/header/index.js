@@ -6,12 +6,12 @@ class HeaderService {
   /**
    * 新增/修改 背景
    */
-  async addOrUpdateHeader({ id, router_path, bg_url }) {
+  async addOrUpdateHeader({ id, router_name, bg_url }) {
     let res
     if (id) {
       // 修改
       res = await Header.update(
-        { router_path, bg_url },
+        { router_name, bg_url },
         {
           where: {
             id,
@@ -20,7 +20,7 @@ class HeaderService {
       )
     } else {
       // 新增
-      res = await Header.create({ router_path, bg_url })
+      res = await Header.create({ router_name, bg_url })
     }
 
     return res ? true : false
@@ -44,19 +44,19 @@ class HeaderService {
    */
   async getAllHeader() {
     let header = await Header.findAll({
-      attributes: ["id", "router_path", "bg_url"],
+      attributes: ["id", "router_name", "bg_url"],
     })
 
     return header
   }
 
   /**
-   * 根据router_path找header
+   * 根据router_name找header
    */
-  async getOneByPath(router_path) {
+  async getOneByPath(router_name) {
     let header = await Header.findOne({
       where: {
-        router_path,
+        router_name,
       },
     });
 

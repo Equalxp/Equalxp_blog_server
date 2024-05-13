@@ -19,7 +19,6 @@ class MessageService {
    * @returns
    */
   async deleteMessage(idList) {
-    console.log(typeof idList)
     let res = await Message.destroy({
       where: {
         id: idList,
@@ -32,7 +31,7 @@ class MessageService {
   /**
    * 分页获取留言
    */
-  async getMessageList({ current, size, message }) {
+  async getMessageList({ current, size, message, time }) {
     const offset = (current - 1) * size
     const limit = size * 1
     const whereOpt = {}
@@ -42,6 +41,12 @@ class MessageService {
           [Op.like]: `%${message}%`,
         },
       })
+    time &&
+      Object.assign(whereOpt, {
+        createdAt: {
+          [Op.between]: time,
+        },
+      });
     const { rows, count } = await Message.findAndCountAll({
       limit,
       offset,

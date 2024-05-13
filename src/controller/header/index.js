@@ -11,9 +11,9 @@ class HeaderController {
    */
   async addOrUpdateHeader(ctx) {
     try {
-      const { id, router_path } = ctx.request.body
+      const { id, route_name } = ctx.request.body
       if (!id) {
-        const flag = await getOneByPath(router_path)
+        const flag = await getOneByPath(route_name)
         if (flag) {
           return ctx.app.emit("error", throwError(errorCode, "已经存在相同的背景路径"), ctx)
         }
@@ -32,7 +32,7 @@ class HeaderController {
    */
   async deleteHeader(ctx) {
     try {
-      const { id, url } = ctx.params
+      const { id, url } = ctx.request.body
       const res = await deleteHeader(id)
 
       if (url) {
