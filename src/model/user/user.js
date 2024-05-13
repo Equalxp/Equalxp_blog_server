@@ -31,6 +31,18 @@ const User = seq.define(
       defaultValue: "",
       comment: "用户昵称",
     },
+    qq: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "",
+      comment: "用户QQ 用于联系",
+    },
+    ip: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "",
+      comment: "ip属地",
+    },
     avatar: {
       type: DataTypes.STRING,
       allowNull: true,

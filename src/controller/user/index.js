@@ -13,6 +13,9 @@ class userController {
   async register(ctx) {
     try {
       const res = await createUser(ctx.request.body)
+      // 保存用户id
+      await updateIp(res.id, ctx.ip.split(":").pop())
+
       ctx.body = result("用户注册成功", {
         id: res.id,
         username: res.username,
@@ -86,10 +89,16 @@ class userController {
       const { username } = ctx.request.body
       // 从返回的对象中剔除password属性，将剩下的属性放到res对象
       const { password, ...res } = await getOneUserInfo({ username })
+      // 保存用户ip地址
+      await updateIp(res.id, ctx.ip.split(":").pop())
+      const ipAddress = getIpAddress(ctx.ip.split(":").pop())
+
       ctx.body = result("用户登录成功", {
         token: jwt.sign(res, JWT_SECRET, { expiresIn: "1d" }),
         username: res.username,
         role: res.role,
+        id: res.id,
+        ipAddress,
       })
     } catch (err) {
       console.error(err)
@@ -117,8 +126,10 @@ class userController {
    */
   async getUserInfo(ctx) {
     try {
-      let res = await getOneUserInfo({ id: ctx.state.user.id })
-      const { role, password, username, ...resInfo } = res
+      let res = await getOneUserInfo({ id: ctx.params.id })
+      const { role, password, username, ip, ...resInfo } = res
+      const ipAddress = getIpAddress(ip)
+      resInfo.ipAddress = ipAddress
       ctx.body = result("获取用户信息成功", resInfo)
     } catch (err) {
       console.error(err)

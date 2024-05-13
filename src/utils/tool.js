@@ -1,3 +1,5 @@
+const ipnet = require("xz-ipnet")()
+
 /**
  * 随机生成昵称
  * @param {*} prefix  前缀
@@ -29,6 +31,18 @@ function randomNickname(prefix, randomLength) {
   return name
 }
 
+function getIpAddress(ip) {
+  const arr = ipnet.find(ip);
+  if (!arr) {
+    return "本机地址";
+  }
+  while (arr.length && arr.pop() == "") {
+    arr.pop();
+  }
+  return arr.pop();
+}
+
 module.exports = {
+  getIpAddress,
   randomNickname,
 }

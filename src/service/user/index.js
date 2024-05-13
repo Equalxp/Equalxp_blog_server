@@ -9,7 +9,7 @@ class UserService {
    * @param {*} user
    */
   async createUser(user) {
-    let { username, password, nick_name } = user
+    let { username, password, nick_name, qq } = user
     let role
     if (username === "admin") {
       role = 1
@@ -20,7 +20,7 @@ class UserService {
     // 随机生成昵称
     nick_name = nick_name ? nick_name : randomNickname("小罗")
     const avatar = "http://img.mrzym.top/Fkqgaotv3_iQoz5bGJGsoWl2oo7x";
-    const res = await User.create({ username, password, nick_name, role })
+    const res = await User.create({ username, password, nick_name, qq, avatar, role })
 
     return res.dataValues
   }
@@ -32,8 +32,8 @@ class UserService {
    * @returns
    */
   async updateOwnUserInfo(id, user) {
-    const { avatar, nick_name } = user
-    const res = await User.update({ avatar, nick_name }, { where: { id } })
+    const { avatar, nick_name, qq } = user
+    const res = await User.update({ avatar, nick_name, qq }, { where: { id } })
     return res[0] > 0 ? true : false
   }
 
@@ -116,6 +116,25 @@ class UserService {
       total: count,
       list: rows,
     }
+  }
+
+  /**
+ * 修改用户ip地址
+ * @param {*} id
+ * @param {*} ip
+ */
+  async updateIp(id, ip) {
+    const res = await User.update(
+      {
+        ip,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+    return res[0] > 0 ? true : false;
   }
 
   /**
