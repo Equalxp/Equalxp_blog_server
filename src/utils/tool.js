@@ -34,12 +34,9 @@ function randomNickname(prefix, randomLength) {
 function getIpAddress(ip) {
   const arr = ipnet.find(ip);
   if (!arr) {
-    return "本机地址";
+    return "本机地址"
   }
-  while (arr.length && arr.pop() == "") {
-    arr.pop();
-  }
-  return arr.pop();
+  return arr[1] || arr[0]
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const User = require("../../model/user/user")
-const { randomNickname } = require("../../utils/tool")
+const { randomNickname, getIpAddress } = require("../../utils/tool")
 const bcrypt = require("bcryptjs") // 密码加盐加密
 const { Op } = require("sequelize")
 
@@ -19,7 +19,7 @@ class UserService {
     }
     // 随机生成昵称
     nick_name = nick_name ? nick_name : randomNickname("小罗")
-    const avatar = "http://img.mrzym.top/Fkqgaotv3_iQoz5bGJGsoWl2oo7x";
+    const avatar = "http://img.mrzym.top/Fkqgaotv3_iQoz5bGJGsoWl2oo7x"
     const res = await User.create({ username, password, nick_name, qq, avatar, role })
 
     return res.dataValues
@@ -110,6 +110,14 @@ class UserService {
       where: whereOpt,
     })
 
+    rows.forEach((v) => {
+      if (v.dataValues.ip) {
+        v.dataValues.ip_address = getIpAddress(v.dataValues.ip);
+      } else {
+        v.dataValues.ip_address = "火星";
+      }
+    });
+
     return {
       current,
       size,
@@ -133,8 +141,8 @@ class UserService {
           id,
         },
       }
-    );
-    return res[0] > 0 ? true : false;
+    )
+    return res[0] > 0 ? true : false
   }
 
   /**

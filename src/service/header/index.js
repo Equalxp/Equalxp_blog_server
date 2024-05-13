@@ -58,9 +58,9 @@ class HeaderService {
       where: {
         router_name,
       },
-    });
+    })
 
-    return header ? true : false;
+    return header ? true : false
   }
 }
 

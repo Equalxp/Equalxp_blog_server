@@ -46,7 +46,7 @@ class MessageService {
         createdAt: {
           [Op.between]: time,
         },
-      });
+      })
     const { rows, count } = await Message.findAndCountAll({
       limit,
       offset,

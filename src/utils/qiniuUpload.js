@@ -50,7 +50,7 @@ const deleteImgs = imgList => {
   bucketManager.batch(deleteOperations, function (err, respBody, respInfo) {
     if (err) {
       console.log(err)
-      //throw err;
+      //throw err
     } else {
       // 200 is success, 298 is part success
       if (parseInt(respInfo.statusCode / 100) == 2) {

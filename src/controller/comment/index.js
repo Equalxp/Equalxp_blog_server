@@ -11,8 +11,8 @@ class CommentController {
    */
   async addComment(ctx) {
     try {
-      const ip = ctx.ip.split(":").pop()
-      let res = await createComment({ ...ctx.request.body, ip })
+      let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
+      let res = await createComment({ ...ctx.request.body, ip: ip.split(":").pop() })
       ctx.body = result("新增评论成功", {
         res,
       })
@@ -27,9 +27,9 @@ class CommentController {
    */
   async applyComment(ctx) {
     try {
-      const ip = ctx.ip.split(":").pop()
+      let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
 
-      let res = await applyComment({ ...ctx.request.body, ip })
+      let res = await applyComment({ ...ctx.request.body, ip: ip.split(":").pop() })
       ctx.body = result("回复评论成功", {
         res,
       })

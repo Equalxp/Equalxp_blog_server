@@ -1,8 +1,8 @@
-const { DataTypes } = require("sequelize");
-const { Sequelize } = require("sequelize");
-var moment = require("moment");
+const { DataTypes } = require("sequelize")
+const { Sequelize } = require("sequelize")
+var moment = require("moment")
 
-const seq = require("../../db/seq");
+const seq = require("../../db/seq")
 
 const Links = seq.define(
   "blog_links",
@@ -33,21 +33,21 @@ const Links = seq.define(
     createdAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
     updatedAt: {
       type: Sequelize.DATE,
       get() {
-        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss");
+        return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
       },
     },
   },
   {
     freezeTableName: true, // 强制表名不转复数
   }
-);
+)
 
-// Links.sync({ alter: true }); //同步数据表
+// Links.sync({ alter: true }) //同步数据表
 
-module.exports = Links;
+module.exports = Links

@@ -17,8 +17,8 @@ router.get("/", (ctx, next) => {
 })
 
 router.get("/swagger.json", async function (ctx) {
-  ctx.set("Content-Type", "application/json");
-  ctx.body = swaggerJson;
-});
+  ctx.set("Content-Type", "application/json")
+  ctx.body = swaggerJson
+})
 
-module.exports = router;
+module.exports = router

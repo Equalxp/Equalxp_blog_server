@@ -14,7 +14,8 @@ class userController {
     try {
       const res = await createUser(ctx.request.body)
       // 保存用户id
-      await updateIp(res.id, ctx.ip.split(":").pop())
+      let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
+      await updateIp(res.id, ip.split(":").pop())
 
       ctx.body = result("用户注册成功", {
         id: res.id,
@@ -90,8 +91,9 @@ class userController {
       // 从返回的对象中剔除password属性，将剩下的属性放到res对象
       const { password, ...res } = await getOneUserInfo({ username })
       // 保存用户ip地址
-      await updateIp(res.id, ctx.ip.split(":").pop())
-      const ipAddress = getIpAddress(ctx.ip.split(":").pop())
+      let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
+      await updateIp(res.id, ip.split(":").pop())
+      const ipAddress = getIpAddress(ip.split(":").pop())
 
       ctx.body = result("用户登录成功", {
         token: jwt.sign(res, JWT_SECRET, { expiresIn: "1d" }),

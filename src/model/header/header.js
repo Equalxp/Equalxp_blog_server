@@ -38,6 +38,6 @@ const Header = seq.define(
   }
 )
 
-// Header.sync({ alter: true }); //同步数据表
+// Header.sync({ alter: true }) //同步数据表
 
-module.exports = Header;
+module.exports = Header
