@@ -4,6 +4,8 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.CATEGORY
 const { addNotify } = require("../notify/index")
 
+const filterSensitive = require("../../utils/sensitive")
+
 /**
  * 评论控制器
  */
@@ -14,14 +16,18 @@ class CommentController {
   async addComment(ctx) {
     try {
       let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
+      ctx.request.body.content = await filterSensitive(ctx.request.body.content)
+
       let res = await createComment({ ...ctx.request.body, ip: ip.split(":").pop() })
-      const { talk_id, from_name, from_id, article_id, content } = ctx.request.body
-      if (from_id != 1) {
+      // from_id表示当前大陆人id 发表评论的人和当前登录人不一样才进行消息提示 author_id表示当前被评论的作者的id
+      let { type, for_id, author_id, from_name, from_id, content } = ctx.request.body
+      // 不是作者自己评论的才给作者消息提示
+      if (from_id != author_id) {
         await addNotify({
-          user_id: 1,
-          type: talk_id ? 2 : 1,
-          to_id: talk_id ? talk_id : article_id,
-          message: `您的${talk_id ? "说说" : "文章"}收到了来自于：${from_name} 的评论: ${content}！`,
+          user_id: author_id,
+          type: type,
+          to_id: for_id,
+          message: `您的${type == 1 ? "文章" : "说说"}收到了来自于：${from_name} 的评论: ${content}！`,
         })
       }
 
@@ -41,14 +47,16 @@ class CommentController {
     try {
       let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
 
+      ctx.request.body.content = await filterSensitive(ctx.request.body.content)
+
       let res = await applyComment({ ...ctx.request.body, ip: ip.split(":").pop() })
-      const { talk_id, from_name, content, from_id, article_id, to_id } = ctx.request.body
+      let { type, for_id, from_name, content, from_id, to_id } = ctx.request.body
 
       if (from_id != to_id) {
         await addNotify({
           user_id: to_id,
-          type: talk_id ? 2 : 1,
-          to_id: talk_id ? talk_id : article_id,
+          type: type,
+          to_id: for_id,
           message: `您的收到了来自于：${from_name} 的评论回复: ${content}！`,
         })
       }
@@ -127,8 +135,8 @@ class CommentController {
    */
   async frontGetParentComment(ctx) {
     try {
-      const { current, size, type, id, order } = ctx.request.body
-      let res = await frontGetParentComment({ current, size, type, id, order })
+      const { current, size, type, for_id, user_id, order } = ctx.request.body
+      let res = await frontGetParentComment({ current, size, type, for_id, user_id, order })
       ctx.body = result("分页查找评论成功", res)
     } catch (err) {
       console.error(err)
@@ -141,8 +149,8 @@ class CommentController {
    */
   async frontGetChildrenComment(ctx) {
     try {
-      const { current, size, type, id, parent_id } = ctx.request.body
-      let res = await frontGetChildrenComment({ current, size, type, id, parent_id })
+      const { current, size, type, for_id, user_id, parent_id } = ctx.request.body
+      let res = await frontGetChildrenComment({ current, size, type, for_id, user_id, parent_id })
       ctx.body = result("分页查找子评论成功", res)
     } catch (err) {
       console.error(err)

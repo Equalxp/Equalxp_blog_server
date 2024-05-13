@@ -5,6 +5,8 @@ const { addMessage, deleteMessage, getMessageList } = require("../../service/mes
 const { randomNickname } = require("../../utils/tool")
 const { addNotify } = require("../notify/index")
 
+const filterSensitive = require("../../utils/sensitive")
+
 class MessageController {
   /**
    * 发布留言
@@ -12,10 +14,11 @@ class MessageController {
   async addMessage(ctx) {
     try {
       let { nick_name } = ctx.request.body
-      const { userId, message, contact, type, avatar } = ctx.request.body
+      let { userId, message, contact, type, avatar } = ctx.request.body
       if (!nick_name) {
         nick_name = randomNickname("游客")
       }
+      message = await filterSensitive(message)
       const res = await addMessage({ message, contact, type, nick_name, avatar })
       // 发布消息推送
       if (!userId || userId != 1) {
@@ -23,8 +26,9 @@ class MessageController {
           user_id: 1,
           type: 3,
           message: `您收到了来自于：${nick_name} 的留言: ${message}！`,
-        });
+        })
       }
+
       ctx.body = result("发布成功", res)
     } catch (err) {
       console.error(err)

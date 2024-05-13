@@ -3,6 +3,8 @@ const { randomNickname, getIpAddress } = require("../../utils/tool")
 const bcrypt = require("bcryptjs") // 密码加盐加密
 const { Op } = require("sequelize")
 
+const filterSensitive = require("../../utils/sensitive")
+
 class UserService {
   /**
    * 用户注册
@@ -17,9 +19,12 @@ class UserService {
     } else {
       role = 2
     }
+
+    // 过滤敏感词
+    nick_name = await filterSensitive(nick_name)
     // 随机生成昵称
-    nick_name = nick_name ? nick_name : randomNickname("小罗")
-    const avatar = "http://img.mrzym.top/Fkqgaotv3_iQoz5bGJGsoWl2oo7x"
+    nick_name = nick_name ? nick_name : randomNickname("小张的迷弟")
+    const avatar = "http://img.mrzym.top/Fpet0b3C-UBzDZBeTnDk_pMDRQyD"
     const res = await User.create({ username, password, nick_name, qq, avatar, role })
 
     return res.dataValues
@@ -32,7 +37,8 @@ class UserService {
    * @returns
    */
   async updateOwnUserInfo(id, user) {
-    const { avatar, nick_name, qq } = user
+    let { avatar, nick_name, qq } = user
+    nick_name = await filterSensitive(nick_name)
     const res = await User.update({ avatar, nick_name, qq }, { where: { id } })
     return res[0] > 0 ? true : false
   }
@@ -88,7 +94,6 @@ class UserService {
 
     // 条件
     const whereOpt = {}
-    console.log(typeof role)
     if (typeof role === "number") {
       role &&
         Object.assign(whereOpt, {
@@ -112,11 +117,11 @@ class UserService {
 
     rows.forEach((v) => {
       if (v.dataValues.ip) {
-        v.dataValues.ip_address = getIpAddress(v.dataValues.ip);
+        v.dataValues.ip_address = getIpAddress(v.dataValues.ip)
       } else {
-        v.dataValues.ip_address = "火星";
+        v.dataValues.ip_address = "火星"
       }
-    });
+    })
 
     return {
       current,
@@ -127,10 +132,10 @@ class UserService {
   }
 
   /**
- * 修改用户ip地址
- * @param {*} id
- * @param {*} ip
- */
+   * 修改用户ip地址
+   * @param {*} id
+   * @param {*} ip
+   */
   async updateIp(id, ip) {
     const res = await User.update(
       {
