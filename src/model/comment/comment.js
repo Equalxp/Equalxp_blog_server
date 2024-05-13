@@ -12,15 +12,15 @@ const Comment = seq.define(
       require: false,
       comment: "评论父级id",
     },
-    talk_id: {
+    type: {
       type: DataTypes.INTEGER,
       require: false,
-      comment: "评论的说说id",
+      comment: "评论类型 1 文章 2 说说 3 留言 ...",
     },
-    article_id: {
+    for_id: {
       type: DataTypes.INTEGER,
       require: false,
-      comment: "评论的文章id",
+      comment: "评论的对象id 比如说说id、文章id等",
     },
     from_id: {
       type: DataTypes.INTEGER,

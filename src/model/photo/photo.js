@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize")
 const { Sequelize } = require("sequelize")
 var moment = require("moment")
 
-const seq = require('../../db/seq')
+const seq = require("../../db/seq")
 
 const Photo = seq.define(
   "blog_photo",

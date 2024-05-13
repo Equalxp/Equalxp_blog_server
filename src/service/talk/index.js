@@ -1,6 +1,8 @@
-const Talk = require('../../model/talk/talk')
+const Talk = require("../../model/talk/talk")
 
 const { publishTalkPhoto, deleteTalkPhoto, getPhotoByTalkId } = require("./talkPhoto")
+const { getOneUserInfo } = require("../user/index")
+const { getIsLikeByIdAndType } = require("../like/index")
 
 /**
  * 说说服务层
@@ -12,11 +14,10 @@ class TalkService {
    */
   async publishTalk(talk) {
     const { talkImgList, ...resTalk } = talk
-
     const res = await Talk.create(resTalk)
 
     if (res.dataValues.id) {
-      let imgList = talkImgList.map(img => {
+      let imgList = talkImgList.map((img) => {
         return {
           talk_id: res.dataValues.id,
           url: img.url,
@@ -24,10 +25,13 @@ class TalkService {
       })
       await publishTalkPhoto(imgList)
     }
+
+    return res.dataValues
   }
 
   /**
    * 修改说说
+   * @param {*} talk
    */
   async updateTalk(talk) {
     const { id, talkImgList, ...resTalk } = talk
@@ -35,7 +39,7 @@ class TalkService {
 
     // 先删除图片关联
     await deleteTalkPhoto(id)
-    let imgList = talkImgList.map(img => {
+    let imgList = talkImgList.map((img) => {
       return {
         talk_id: id,
         url: img.url,
@@ -46,6 +50,7 @@ class TalkService {
 
     return res[0] > 0 ? true : false
   }
+
   /**
    * 删除说说
    * @param {*} id
@@ -119,6 +124,31 @@ class TalkService {
   }
 
   /**
+   * 说说点赞
+   * @param {*} id
+   */
+  async talkLike(id) {
+    let talk = await Talk.findByPk(id)
+    if (talk) {
+      await talk.increment("like_times", { by: 1 })
+    }
+
+    return talk ? true : false
+  }
+  /**
+   * 取消说说点赞
+   * @param {*} id
+   */
+  async cancelTalkLike(id) {
+    let talk = await Talk.findByPk(id)
+    if (talk) {
+      await talk.decrement("like_times", { by: 1 })
+    }
+
+    return talk ? true : false
+  }
+
+  /**
    *
    * @param {*} current 当前页
    * @param {*} size 数量
@@ -130,25 +160,41 @@ class TalkService {
     const limit = size * 1
     const whereOpt = {}
     status && Object.assign(whereOpt, { status })
-    is_top && Object.assign(whereOpt, { is_top })
     const { rows, count } = await Talk.findAndCountAll({
       limit,
       offset,
       where: whereOpt,
-      order: [["is_top", "ASC"], ["createdAt", "DESC"]],
+      order: [
+        ["is_top", "ASC"],
+        ["createdAt", "DESC"],
+      ],
     })
     let promiseList = []
-    promiseList = rows.map(async v => {
+    promiseList = rows.map(async (v) => {
       return await getPhotoByTalkId(v.id)
     })
 
-    await Promise.all(promiseList).then(res => {
-      res.forEach(v => {
+    await Promise.all(promiseList).then((res) => {
+      res.forEach((v) => {
         if (v.length) {
-          let index = rows.findIndex(r => r.dataValues.id == v[0].talk_id)
+          let index = rows.findIndex((r) => r.dataValues.id == v[0].talk_id)
           if (index != -1) {
-            rows[index].dataValues.talkImgList = v.map(v => v.url)
+            rows[index].dataValues.talkImgList = v.map((v) => v.url)
           }
+        }
+      })
+    })
+
+    const userList = rows.map(async (row) => {
+      return await getOneUserInfo({ id: row.user_id })
+    })
+
+    await Promise.all(userList).then((res) => {
+      rows.forEach((row) => {
+        let index = res.findIndex((re) => re.id == row.user_id)
+        if (index != -1) {
+          row.dataValues.nick_name = res[index].nick_name
+          row.dataValues.avatar = res[index].avatar
         }
       })
     })
@@ -169,12 +215,12 @@ class TalkService {
 
     return {
       ...res.dataValues,
-      talkImgList: imgs.length ? imgs.map(v => v.url) : [],
+      talkImgList: imgs.length ? imgs.map((v) => v.url) : [],
     }
   }
 
   // 前台获取说说列表
-  async blogGetTalkList(current, size) {
+  async blogGetTalkList(current, size, user_id) {
     const offset = (current - 1) * size
     const limit = size * 1
 
@@ -191,20 +237,46 @@ class TalkService {
     })
 
     let promiseList = []
-    promiseList = rows.map(async v => {
+    promiseList = rows.map(async (v) => {
       return await getPhotoByTalkId(v.id)
     })
 
-    await Promise.all(promiseList).then(res => {
-      res.forEach(v => {
+    await Promise.all(promiseList).then((res) => {
+      res.forEach((v) => {
         if (v.length) {
-          let index = rows.findIndex(r => r.dataValues.id == v[0].talk_id)
+          let index = rows.findIndex((r) => r.dataValues.id == v[0].talk_id)
           if (index != -1) {
-            rows[index].dataValues.talkImgList = v.map(v => v.url)
+            rows[index].dataValues.talkImgList = v.map((v) => v.url)
           }
         }
       })
     })
+
+    const userList = rows.map(async (row) => {
+      return await getOneUserInfo({ id: row.user_id })
+    })
+
+    await Promise.all(userList).then((res) => {
+      rows.forEach((row) => {
+        let index = res.findIndex((re) => re.id == row.user_id)
+        if (index != -1) {
+          row.dataValues.nick_name = res[index].nick_name
+          row.dataValues.avatar = res[index].avatar
+        }
+      })
+    })
+
+    // 判断当前登录用户是否点赞了
+    if (user_id) {
+      const promiseLikeList = rows.map((row) => {
+        return getIsLikeByIdAndType({ for_id: row.id, type: 2, user_id })
+      })
+      await Promise.all(promiseLikeList).then((result) => {
+        result.forEach((r, index) => {
+          rows[index].dataValues.is_like = r
+        })
+      })
+    }
 
     return {
       current,
@@ -214,3 +286,5 @@ class TalkService {
     }
   }
 }
+
+module.exports = new TalkService()

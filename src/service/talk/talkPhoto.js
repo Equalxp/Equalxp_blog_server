@@ -1,6 +1,5 @@
 const { Op } = require("sequelize")
 const TalkPhoto = require("../../model/talk/talkPhoto.js")
-
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
 /**
@@ -30,7 +29,7 @@ class TalkPhotoService {
           talk_id,
         }
       })
-      // 远程删除图片
+       // 远程删除图片
       let keys = urlList.map(v => v.dataValues.url.split("/").pop())
       await deleteImgs(keys)
     }

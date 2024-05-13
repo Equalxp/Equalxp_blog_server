@@ -2,6 +2,7 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.LINKS
 
 const { addOrUpdateLinks, deleteLinks, approveLinks, getLinksList } = require("../../service/links/index")
+const { addNotify } = require("../notify/index")
 
 class LinksController {
   /**

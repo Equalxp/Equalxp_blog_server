@@ -2,9 +2,8 @@ const { DataTypes } = require("sequelize")
 const { Sequelize } = require("sequelize")
 var moment = require("moment")
 
-const seq = require('../../db/seq')
+const seq = require("../../db/seq")
 
-// 背景图model
 const Header = seq.define(
   "blog_header",
   {
@@ -18,20 +17,18 @@ const Header = seq.define(
       require: true,
       comment: "背景图",
     },
-    createAt: {
-      type: DataTypes.DATE,
-      // Header.createAt 在读取字段值时会自动调用此获取器
+    createdAt: {
+      type: Sequelize.DATE,
       get() {
         return moment(this.getDataValue("createdAt")).format("YYYY-MM-DD HH:mm:ss")
-      }
+      },
     },
     updatedAt: {
-      type: DataTypes.DATE,
-      // Header.createAt 在读取字段值时会自动调用此获取器
+      type: Sequelize.DATE,
       get() {
         return moment(this.getDataValue("updatedAt")).format("YYYY-MM-DD HH:mm:ss")
-      }
-    }
+      },
+    },
   },
   {
     freezeTableName: true, // 强制表名不转复数

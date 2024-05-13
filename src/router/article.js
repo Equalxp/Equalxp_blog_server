@@ -21,7 +21,8 @@ const {
   getRecommendArticleById,
   getArticleListByContent,
   getHotArticle,
-  articleThumbsUp,
+  articleLike,
+  cancelArticleLike,
   addReadingDuration,
 } = require("../controller/article/index")
 
@@ -107,7 +108,10 @@ router.get("/getArticleListByContent/:content", getArticleListByContent)
 router.get("/getHotArticle", getHotArticle)
 
 // 文章点赞
-router.put("/thumbsUp/:id", articleThumbsUp)
+router.put("/like/:id", articleLike)
+
+// 取消点赞
+router.put("/cancelLike/:id", cancelArticleLike)
 
 // 增加文章阅读时长 毫秒
 router.put("/addReadingDuration/:id/:duration", addReadingDuration)

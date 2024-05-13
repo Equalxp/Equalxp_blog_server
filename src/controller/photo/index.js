@@ -35,6 +35,7 @@ class PhotoController {
       if (UPLOADTYPE == "qiniu" && type == 2) {
         await deleteImgs(keys)
       }
+
       ctx.body = result("删除图片成功", res)
     } catch (err) {
       console.error(err)
@@ -71,9 +72,7 @@ class PhotoController {
     }
   }
 
-  /**
-   * 获取相册的所有照片
-   */
+  // 获取相册的所有照片
   async getAllPhotosByAlbumId(ctx) {
     try {
       const res = await getAllPhotosByAlbumId(ctx.params.id)

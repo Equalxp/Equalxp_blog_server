@@ -1,7 +1,7 @@
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.TALK
 
-const { publishTalk, updateTalk, deleteTalkById, togglePublic, toggleTop, revertTalk, getTalkList, getTalkById, blogGetTalkList } = require("../../service/talk/index")
+const { publishTalk, updateTalk, deleteTalkById, togglePublic, toggleTop, revertTalk, getTalkList, getTalkById, talkLike, cancelTalkLike, blogGetTalkList } = require("../../service/talk/index")
 
 /**
  * 说说控制器
@@ -63,6 +63,30 @@ class TalkController {
     }
   }
 
+  // 说说点赞
+  async talkLike(ctx) {
+    try {
+      const { id } = ctx.params
+      let res = await talkLike(id)
+      ctx.body = result("点赞成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "点赞失败"), ctx)
+    }
+  }
+
+  // 取消说说点赞
+  async cancelTalkLike(ctx) {
+    try {
+      const { id } = ctx.params
+      let res = await cancelTalkLike(id)
+      ctx.body = result("取消点赞成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "取消点赞失败"), ctx)
+    }
+  }
+
   /**
    * 恢复说说
    */
@@ -78,7 +102,7 @@ class TalkController {
   }
 
   /**
-   * 切换置顶状态
+   * 切花置顶状态
    */
   async toggleTop(ctx) {
     const { id, is_top } = ctx.params
@@ -127,9 +151,9 @@ class TalkController {
    */
   async blogGetTalkList(ctx) {
     try {
-      const { current, size } = ctx.request.body
+      const { current, size, user_id } = ctx.request.body
 
-      let res = await blogGetTalkList(current, size)
+      let res = await blogGetTalkList(current, size, user_id)
       ctx.body = result("获取说说列表成功", res)
     } catch (err) {
       console.error(err)

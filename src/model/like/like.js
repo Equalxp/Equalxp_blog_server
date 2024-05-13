@@ -4,23 +4,23 @@ var moment = require("moment")
 
 const seq = require("../../db/seq")
 
-const PhotoAlbum = seq.define(
-  "blog_photo_album",
+const Like = seq.define(
+  "blog_like",
   {
-    album_name: {
-      type: DataTypes.STRING(26),
+    type: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "相册名称",
+      comment: "点赞类型 1 文章 2 说说 3 留言 4 评论",
     },
-    album_cover: {
-      type: DataTypes.STRING(555),
+    for_id: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "相册封面",
+      comment: "点赞的id 文章id 说说id 留言id",
     },
-    description: {
-      type: DataTypes.STRING(55),
+    user_id: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "相册描述信息",
+      comment: "点赞用户id",
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -40,6 +40,6 @@ const PhotoAlbum = seq.define(
   }
 )
 
-// PhotoAlbum.sync({ alter: true }) // 同步数据库表
+// Like.sync({ alter: true }) //同步数据表
 
-module.exports = PhotoAlbum
+module.exports = Like

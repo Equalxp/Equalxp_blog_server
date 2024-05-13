@@ -1,10 +1,11 @@
-// 留言路由
+/**
+ * 留言的路由
+ */
 const Router = require("koa-router")
 const router = new Router({ prefix: "/message" })
 
 const { auth, adminAuth } = require("../middleware/auth/index")
 const { addMessage, deleteMessage, getMessageList } = require("../controller/message/index")
-
 
 // 新增留言
 router.post("/add", addMessage)

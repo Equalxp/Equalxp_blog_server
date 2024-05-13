@@ -92,6 +92,7 @@ class PhotoAlbumService {
 
     return res ? res.dataValues : null
   }
+
   // 获取所有的相册
   async getAllAlbumList() {
     let res = await PhotoAlbum.findAll({

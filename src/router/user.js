@@ -1,7 +1,7 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/user" })
 
-const { login, register, updateOwnUserInfo, updatePassword, updateRole, getUserList, getUserInfo } = require("../controller/user")
+const { login, register, updateOwnUserInfo, updatePassword, updateRole, getUserList, getUserInfo, adminUpdateUserInfo } = require("../controller/user")
 
 const { userValidate, verifyUser, crpyPassword, verifyLogin, verifyUpdatePassword } = require("../middleware/user/index")
 
@@ -18,11 +18,12 @@ router.put("/updatePassword", auth, verifyUpdatePassword, updatePassword)
 // 管理员修改用户角色
 router.put("/updateRole/:id/:role", auth, adminAuth, updateRole)
 // 管理员修改用户信息
-// TOTD
+router.put("/adminUpdateUserInfo", auth, adminAuth, adminUpdateUserInfo)
+
 // 分页获取用户列表
 router.post("/getUserList", auth, getUserList)
 
-// 获取当前登录用户的信息 用于后台或前台获取用户信息（主要是博主的信息）
-router.get("/getUserInfo", auth, getUserInfo)
+// 根据用户id获取用户信息
+router.get("/getUserInfoById/:id", getUserInfo)
 
 module.exports = router

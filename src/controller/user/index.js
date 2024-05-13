@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken")
 const { JWT_SECRET } = require("../../config/config.default")
-const { createUser, updateOwnUserInfo, getOneUserInfo, updatePassword, updateRole, getUserList, adminUpdateUserInfo } = require("../../service/user/index")
+const { createUser, updateOwnUserInfo, getOneUserInfo, updatePassword, updateRole, getUserList, adminUpdateUserInfo, updateIp } = require("../../service/user/index")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.USER
 
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
+const { getIpAddress } = require("../../utils/tool")
 class userController {
   /**
    * 用户注册
@@ -33,7 +34,6 @@ class userController {
   async updateOwnUserInfo(ctx) {
     try {
       const { id } = ctx.state.user
-
       const { avatar } = ctx.request.body
 
       let one = await getOneUserInfo({ id })
@@ -41,6 +41,7 @@ class userController {
       if (UPLOADTYPE == "qiniu" && one.avatar && one.avatar != avatar) {
         await deleteImgs([one.avatar.split("/").pop()])
       }
+
       const res = await updateOwnUserInfo(id, ctx.request.body)
 
       ctx.body = result("修改用户成功", res)
@@ -88,13 +89,13 @@ class userController {
     try {
       // 获取用户信息(在token的payload中，记录id，username，role)
       const { username } = ctx.request.body
+
       // 从返回的对象中剔除password属性，将剩下的属性放到res对象
       const { password, ...res } = await getOneUserInfo({ username })
       // 保存用户ip地址
       let ip = ctx.get("X-Real-IP") || ctx.get("X-Forwarded-For") || ctx.ip
       await updateIp(res.id, ip.split(":").pop())
       const ipAddress = getIpAddress(ip.split(":").pop())
-
       ctx.body = result("用户登录成功", {
         token: jwt.sign(res, JWT_SECRET, { expiresIn: "1d" }),
         username: res.username,
@@ -124,7 +125,7 @@ class userController {
   }
 
   /**
-   * 根据用户id获取用户信息 当前用户
+   * 根据用户id获取当前登录人信息
    */
   async getUserInfo(ctx) {
     try {
@@ -141,6 +142,7 @@ class userController {
 
   /**
    * 管理员根据用户id修改用户的信息
+   * @param {*} ctx
    */
   async adminUpdateUserInfo(ctx) {
     try {

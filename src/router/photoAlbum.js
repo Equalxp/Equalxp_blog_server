@@ -1,3 +1,6 @@
+/**
+ * 关于相册的路由
+ */
 const Router = require("koa-router")
 const router = new Router({ prefix: "/photoAlbum" })
 

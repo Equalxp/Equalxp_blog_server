@@ -66,6 +66,7 @@ const User = seq.define(
     freezeTableName: true, // 强制表名不转复数
   }
 )
+
 // User.sync({ alter: true }) //创建数据表
 
 module.exports = User

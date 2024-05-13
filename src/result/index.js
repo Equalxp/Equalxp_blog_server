@@ -17,6 +17,7 @@ const ERRORCODE = {
   COMMENT: "100015", // 评论
   AUTHTOKEN: "100016", // 用户登录过期
   NOTIFY: "100017", // 消息推送
+  LIKE: "100018", // 点赞
 }
 
 /**

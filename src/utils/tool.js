@@ -32,7 +32,7 @@ function randomNickname(prefix, randomLength) {
 }
 
 function getIpAddress(ip) {
-  const arr = ipnet.find(ip);
+  const arr = ipnet.find(ip)
   if (!arr) {
     return "本机地址"
   }

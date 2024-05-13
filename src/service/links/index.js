@@ -1,10 +1,9 @@
-// 友情链接-服务层
 const { Op } = require("sequelize")
-const Links = require('../../model/links/links')
+const Links = require("../../model/links/links")
 
 class LinksService {
   /**
-   * 新增｜编辑
+   * 新增/编辑友链
    */
   async addOrUpdateLinks({ id, site_name, site_desc, site_avatar, url }) {
     let res
@@ -13,13 +12,14 @@ class LinksService {
         { site_name, site_desc, site_avatar, url },
         {
           where: {
-            id
-          }
+            id,
+          },
         }
       )
     } else {
       res = await Links.create({ site_name, site_desc, site_avatar, url, status: 1 })
     }
+
     return res ? true : false
   }
 
@@ -30,14 +30,15 @@ class LinksService {
     let res = await Links.destroy({
       where: {
         id: idList
-      }
+      },
     })
+
     return res ? res : null
   }
 
   /**
-  * 批量审核友链
-  */
+   * 批量审核友链
+   */
   async approveLinks(idList) {
     let res = await Links.update(
       { status: 2 },

@@ -1,11 +1,14 @@
+/**
+ * 分类路由
+ */
 const Router = require("koa-router")
 const router = new Router({ prefix: "/category" })
 
 const { auth, adminAuth } = require("../middleware/auth/index")
 
-const { addCategory, updateCategory, deleteCategories, getCategoryList, getCategoryDictionary } = require("../controller/Category/index")
+const { addCategory, updateCategory, deleteCategories, getCategoryList, getCategoryDictionary } = require("../controller/category/index")
 
-const { verifyCategory, verifyDeleteCategories } = require("../middleware/Category/Category")
+const { verifyCategory, verifyDeleteCategories } = require("../middleware/category/category")
 
 // 新增分类
 router.post("/add", auth, adminAuth, verifyCategory, addCategory)

@@ -1,4 +1,6 @@
-// 页面头部的背景图路由
+/**
+ * 页面头部背景图片的路由
+ */
 const Router = require("koa-router")
 const router = new Router({ prefix: "/pageHeader" })
 

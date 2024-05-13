@@ -1,6 +1,8 @@
 const Comment = require("../../model/comment/comment")
 const { Op } = require("sequelize")
 const { getIpAddress } = require("../../utils/tool")
+const { getOneUserInfo } = require("../user/index")
+const { getIsLikeByIdAndType } = require("../like/index")
 
 /**
  * 评论服务层
@@ -12,8 +14,8 @@ class CommentService {
    * @returns Boolean
    */
   async createComment(comment) {
-    const { talk_id, article_id, from_id, from_name, from_avatar, content, ip } = comment
-    const res = await Comment.create({ talk_id, article_id, from_id, from_name, from_avatar, content, ip })
+    const { type, for_id, from_id, from_name, from_avatar, content, ip } = comment
+    const res = await Comment.create({ type, for_id, from_id, from_name, from_avatar, content, ip })
 
     return res.dataValues
   }
@@ -24,8 +26,8 @@ class CommentService {
    * @returns Boolean
    */
   async applyComment(comment) {
-    const { parent_id, talk_id, article_id, from_id, from_avatar, from_name, to_id, to_name, to_avatar, content, ip } = comment
-    const res = await Comment.create({ parent_id, talk_id, article_id, from_id, from_avatar, from_name, to_id, to_name, to_avatar, content, ip })
+    const { parent_id, type, for_id, from_id, from_avatar, from_name, to_id, to_name, to_avatar, content, ip } = comment
+    const res = await Comment.create({ parent_id, type, for_id, from_id, from_avatar, from_name, to_id, to_name, to_avatar, content, ip })
 
     return res.dataValues
   }
@@ -125,10 +127,52 @@ class CommentService {
       offset,
       limit,
       where: whereOpt,
-      order: [["createdAt", "ASC"]],
+      order: [["createdAt", "DESC"]],
     })
     rows.forEach((r) => {
       r.dataValues.ipAddress = getIpAddress(r.dataValues.ip)
+    })
+
+    // 根据用户form_id获取用户当前的昵称和头像
+    const promiseList1 = rows.map(async (row) => {
+      let res
+      if (row.from_id) {
+        res = await getOneUserInfo({ id: row.from_id })
+      }
+      return res
+    })
+
+    await Promise.all(promiseList1).then((result) => {
+      result.forEach((r) => {
+        if (r) {
+          let index = rows.findIndex((row) => row.from_id == r.id)
+          if (index != -1) {
+            rows[index].from_avatar = r.avatar
+            rows[index].form_name = r.nick_name
+          }
+        }
+      })
+    })
+
+    // 根据用户to_id获取用户当前的昵称和头像
+    const promiseList2 = rows.map(async (row) => {
+      let res
+      if (row.to_id) {
+        res = await getOneUserInfo({ id: row.to_id })
+      }
+      return res
+    })
+
+    await Promise.all(promiseList2).then((result) => {
+      result.forEach((r) => {
+        if (r) {
+          let index = rows.findIndex((row) => row.to_id == r.id)
+          if (index != -1) {
+            rows[index].to_avatar = r.avatar
+            rows[index].to_name = r.nick_name
+          }
+        }
+      })
     })
 
     return {
@@ -144,11 +188,12 @@ class CommentService {
    * @param {*} type 说说还是评论 talk/article
    * @param {*} id 说说/评论id
    */
-  async frontGetParentComment({ current, size, type, id, order }) {
+  async frontGetParentComment({ current, size, type, for_id, user_id, order }) {
     const whereOpt = {}
     const offset = (current - 1) * size
     const limit = size * 1
-    type == "article" ? Object.assign(whereOpt, { article_id: id }) : Object.assign(whereOpt, { talk_id: id })
+    type && Object.assign(whereOpt, { type })
+    for_id && Object.assign(whereOpt, { for_id })
     Object.assign(whereOpt, { parent_id: null })
 
     const orderArr = order == "new" ? ["createdAt", "DESC"] : ["thumbs_up", "DESC"]
@@ -161,6 +206,38 @@ class CommentService {
     rows.forEach((r) => {
       r.dataValues.ipAddress = getIpAddress(r.dataValues.ip)
     })
+    // 根据用户id获取用户当前的昵称和头像
+    const promiseList = rows.map(async (row) => {
+      let res
+      if (row.dataValues.from_id) {
+        res = await getOneUserInfo({ id: row.from_id })
+      }
+      return res
+    })
+
+    await Promise.all(promiseList).then((result) => {
+      result.forEach((r) => {
+        if (r) {
+          let index = rows.findIndex((row) => row.from_id == r.id)
+          if (index != -1) {
+            rows[index].dataValues.from_avatar = r.avatar
+            rows[index].dataValues.form_name = r.nick_name
+          }
+        }
+      })
+    })
+    // 判断当前登录用户是否点赞了
+    if (user_id) {
+      const promiseLikeList = rows.map((row) => {
+        return getIsLikeByIdAndType({ for_id: row.id, type: 4, user_id })
+      })
+      await Promise.all(promiseLikeList).then((result) => {
+        result.forEach((r, index) => {
+          rows[index].dataValues.is_like = r
+        })
+      })
+    }
+
     return {
       current: current,
       size: size,
@@ -175,22 +252,77 @@ class CommentService {
    * @param {*} type 说说还是评论 talk/article
    * @param {*} id 说说/评论id
    */
-  async frontGetChildrenComment({ current, size, type, id, parent_id }) {
+  async frontGetChildrenComment({ current, size, type, for_id, user_id, parent_id }) {
     const whereOpt = {}
     const offset = (current - 1) * size
     const limit = size * 1
-    type == "article" ? Object.assign(whereOpt, { article_id: id }) : Object.assign(whereOpt, { talk_id: id })
+    Object.assign(whereOpt, { type })
+    Object.assign(whereOpt, { for_id })
     Object.assign(whereOpt, { parent_id: parent_id })
 
     const { count, rows } = await Comment.findAndCountAll({
       offset,
       limit,
       where: whereOpt,
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "ASC"]],
     })
     rows.forEach((r) => {
       r.dataValues.ipAddress = getIpAddress(r.dataValues.ip)
     })
+
+    // 根据用户form_id获取用户当前的昵称和头像
+    const promiseList1 = rows.map(async (row) => {
+      let res
+      if (row.dataValues.from_id) {
+        res = await getOneUserInfo({ id: row.from_id })
+      }
+      return res
+    })
+
+    await Promise.all(promiseList1).then((result) => {
+      result.forEach((r) => {
+        if (r) {
+          let index = rows.findIndex((row) => row.from_id == r.id)
+          if (index != -1) {
+            rows[index].dataValues.from_avatar = r.avatar
+            rows[index].dataValues.form_name = r.nick_name
+          }
+        }
+      })
+    })
+
+    // 根据用户to_id获取用户当前的昵称和头像
+    const promiseList2 = rows.map(async (row) => {
+      let res
+      if (row.dataValues.to_id) {
+        res = await getOneUserInfo({ id: row.dataValues.to_id })
+      }
+      return res
+    })
+
+    await Promise.all(promiseList2).then((result) => {
+      result.forEach((r) => {
+        if (r) {
+          let index = rows.findIndex((row) => row.to_id == r.id)
+          if (index != -1) {
+            rows[index].dataValues.to_avatar = r.avatar
+            rows[index].dataValues.to_name = r.nick_name
+          }
+        }
+      })
+    })
+
+    // 判断当前登录用户是否点赞了
+    if (user_id) {
+      const promiseLikeList = rows.map((row) => {
+        return getIsLikeByIdAndType({ for_id: row.id, type: 4, user_id })
+      })
+      await Promise.all(promiseLikeList).then((result) => {
+        result.forEach((r, index) => {
+          rows[index].dataValues.is_like = r
+        })
+      })
+    }
 
     return {
       current: current,

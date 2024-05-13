@@ -8,15 +8,16 @@ class ArticleService {
   // 替换url
   async updateUrl() {
     let res = await Article.findAll()
-    res.forEach(async v => {
-      v.dataValues.article_cover = v.dataValues.article_cover.replace('http://rs8h1phj4.hn-bkt.clouddn.com/', 'http://img.mrzym.top/')
+    res.forEach(async (v) => {
+      v.dataValues.article_cover = v.dataValues.article_cover.replace("http://rs8h1phj4.hn-bkt.clouddn.com/", "http://img.mrzym.top/")
       await Config.update(v.dataValues, {
         where: {
-          id: v.dataValues.id
-        }
+          id: v.dataValues.id,
+        },
       })
     })
   }
+
   /**
    * 新增文章
    * @param {*} article
@@ -45,7 +46,6 @@ class ArticleService {
       res = await Article.update(article, {
         where: {
           id: article.id,
-          status: 1,
         },
       })
     } catch (err) {
@@ -225,7 +225,7 @@ class ArticleService {
 
     // 根据文章id获取文章各自的标签名称列表 和 分类名称
     let promiseList = []
-    promiseList = rows.map(async v => {
+    promiseList = rows.map(async (v) => {
       let obj = {
         categoryName: await getCategoryNameById(v.dataValues.category_id),
         tagList: await getTagListByArticleId(v.dataValues.id),
@@ -234,7 +234,7 @@ class ArticleService {
       return obj
     })
 
-    await Promise.all(promiseList).then(res => {
+    await Promise.all(promiseList).then((res) => {
       if (res.length) {
         rows.forEach((v, i) => {
           v.dataValues.categoryName = res[i].categoryName
@@ -296,7 +296,7 @@ class ArticleService {
       },
     })
     let promiseList = []
-    promiseList = rows.map(async v => {
+    promiseList = rows.map(async (v) => {
       let obj = {
         categoryName: await getCategoryNameById(v.dataValues.category_id),
         tagList: await getTagListByArticleId(v.dataValues.id),
@@ -304,7 +304,7 @@ class ArticleService {
       return obj
     })
 
-    await Promise.all(promiseList).then(res => {
+    await Promise.all(promiseList).then((res) => {
       if (res.length) {
         rows.forEach((v, i) => {
           v.dataValues.categoryName = res[i].categoryName
@@ -342,7 +342,7 @@ class ArticleService {
 
     let resultList = {}
     // 这里的对象键值只能用字符串，不然对象无法根据键来判断
-    rows.forEach(v => {
+    rows.forEach((v) => {
       let year = "year_" + v.createdAt.substring(0, 4)
       if (resultList.hasOwnProperty(year)) {
         resultList[year].push(v)
@@ -352,7 +352,7 @@ class ArticleService {
       }
     })
     // 整合数据
-    let final = Object.keys(resultList).map(key => {
+    let final = Object.keys(resultList).map((key) => {
       let obj = {
         year: key.replace("year_", ""),
         articleList: resultList[key],
@@ -385,6 +385,7 @@ class ArticleService {
       limit,
       where: {
         id: tagIdList,
+        status: 1,
       },
       attributes: ["id", "article_title", "article_cover", "createdAt"],
       order: [["createdAt", "DESC"]],
@@ -460,7 +461,6 @@ class ArticleService {
       contextPrevious = await Article.findOne({
         where: {
           id: article_id,
-          status: 1,
         },
         attributes: ["id", "article_title", "article_cover"],
       })
@@ -481,6 +481,7 @@ class ArticleService {
       limit: 6,
       where: {
         id: articleIdList,
+        status: 1,
       },
       attributes: ["id", "article_title", "article_cover", "createdAt"],
       order: [["createdAt", "DESC"]],
@@ -512,7 +513,7 @@ class ArticleService {
     let res = await Article.findAll({
       where: {
         article_content: {
-          [Op.like]: `%${content}%`
+          [Op.like]: `%${content}%`,
         },
         status: 1,
       },
@@ -523,7 +524,7 @@ class ArticleService {
     })
     let result = []
     res.length &&
-      res.forEach(r => {
+      res.forEach((r) => {
         let { id, article_content, article_title } = r.dataValues
         let index = article_content.search(content)
         let previous = index
@@ -534,12 +535,13 @@ class ArticleService {
           article_title,
         })
       })
+
     return result
   }
 
   /**
-  * 获取热门文章
-  */
+   * 获取热门文章
+   */
   async getHotArticle() {
     let res = await Article.findAll({
       where: {
@@ -556,7 +558,7 @@ class ArticleService {
   /**
    * 文章点赞
    */
-  async articleThumbsUp(id) {
+  async articleLike(id) {
     let article = await Article.findByPk(id)
     if (article) {
       await article.increment("thumbs_up_times", { by: 1 })
@@ -564,9 +566,23 @@ class ArticleService {
 
     return article ? true : false
   }
+  /**
+   * 取消文章点赞
+   * @param {*} id
+   */
+  async cancelArticleLike(id) {
+    let article = await Article.findByPk(id)
+    if (article) {
+      await article.decrement("thumbs_up_times", { by: 1 })
+    }
+
+    return article ? true : false
+  }
 
   /**
-   * 增加文章阅读时长
+   * 文章增加阅读时长
+   * @param {*} id
+   * @param {*} duration
    */
   async addReadingDuration(id, duration) {
     let article = await Article.findByPk(id)
@@ -579,6 +595,7 @@ class ArticleService {
 
   /**
    * 根据文章获取文章封面
+   * @param {*} id
    */
   async getArticleCoverById(id) {
     let res = await Article.findByPk(id)

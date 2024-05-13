@@ -7,8 +7,8 @@ module.exports = (err, ctx) => {
       break
     case "100016":
       // token 过期 需要重新登录
-      status = 401;
-      break;
+      status = 401
+      break
     default:
       status = 500
   }

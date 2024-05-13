@@ -1,15 +1,32 @@
 const seq = require("../../db/seq")
 
 const { deleteArticleTag } = require("../../service/article/articleTag")
-const { createArticle, updateArticle, updateTop, deleteArticle, revertArticle, toggleArticlePublic,
-  getArticleList, getArticleInfoByTitle, getArticleById, blogHomeGetArticleList, blogTimelineGetArticleList,
-  getArticleListByTagId, getArticleListByCategoryId, getRecommendArticleById, getArticleListByContent,
-  getHotArticle, articleThumbsUp, addReadingDuration, getArticleCoverById } = require("../../service/article/index")
+const {
+  createArticle,
+  updateArticle,
+  updateTop,
+  deleteArticle,
+  revertArticle,
+  toggleArticlePublic,
+  getArticleList,
+  getArticleInfoByTitle,
+  getArticleById,
+  blogHomeGetArticleList,
+  blogTimelineGetArticleList,
+  getArticleListByTagId,
+  getArticleListByCategoryId,
+  getRecommendArticleById,
+  getArticleListByContent,
+  getHotArticle,
+  articleLike,
+  cancelArticleLike,
+  addReadingDuration,
+  getArticleCoverById,
+} = require("../../service/article/index")
 const { createCategoryOrReturn, createArticleTagByArticleId } = require("./common")
 
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
-
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
 
@@ -64,7 +81,6 @@ class ArticleController {
 
       let newArticleTagList = await createArticleTagByArticleId(articleRest.id, tagList)
 
-      console.log(articleRest)
       let res = await updateArticle(articleRest)
 
       ctx.body = result("修改文章成功", {
@@ -101,6 +117,7 @@ class ArticleController {
   async deleteArticle(ctx) {
     try {
       const { id, status } = ctx.params
+
       if (UPLOADTYPE == "qiniu") {
         if (Number(status) === 3) {
           let oldCover = await getArticleCoverById(id)
@@ -110,7 +127,6 @@ class ArticleController {
       }
 
       let res = await deleteArticle(id, status)
-
       ctx.body = result("删除文章成功", res)
     } catch (err) {
       console.error(err)
@@ -291,9 +307,7 @@ class ArticleController {
     }
   }
 
-  /**
-   * 获取热门文章
-   */
+  // 获取热门文章
   async getHotArticle(ctx) {
     try {
       let res = await getHotArticle()
@@ -304,21 +318,29 @@ class ArticleController {
     }
   }
 
-  /**
-   * 文章点赞功能
-   */
-  async articleThumbsUp(ctx) {
+  // 文章点赞
+  async articleLike(ctx) {
     try {
       const { id } = ctx.params
-      let res = await articleThumbsUp(id)
+      let res = await articleLike(id)
+      ctx.body = result("点赞成功", res)
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "点赞失败"), ctx)
     }
   }
-  /**
-   * 增加文章阅读时长接口
-   */
+  // 取消文章点赞
+  async cancelArticleLike(ctx) {
+    try {
+      const { id } = ctx.params
+      let res = await cancelArticleLike(id)
+      ctx.body = result("取消点赞成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "取消点赞失败"), ctx)
+    }
+  }
+
   async addReadingDuration(ctx) {
     try {
       const { id, duration } = ctx.params

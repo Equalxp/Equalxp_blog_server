@@ -47,7 +47,6 @@ class ArticleTagService {
     res = res.map(v => {
       return v.tag_id
     })
-
     const { tagNameList, tagList } = await getTagByTagIdList(res)
     return {
       tagList,

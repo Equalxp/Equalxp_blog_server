@@ -4,7 +4,7 @@ const { JWT_SECRET } = require("../../config/config.default")
 
 const { ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.AUTH // 用户权限不足
-const tokenErrorCode = ERRORCODE.AUTHTOKEN; // 用户登录过期
+const tokenErrorCode = ERRORCODE.AUTHTOKEN // 用户登录过期
 
 const auth = async (ctx, next) => {
   const { authorization } = ctx.request.header

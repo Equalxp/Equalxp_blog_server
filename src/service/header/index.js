@@ -1,17 +1,17 @@
-const Header = require('../../model/header/header')
+const Header = require("../../model/header/header")
 /**
- * 头部背景图-服务层
+ * 头部背景图服务层
  */
 class HeaderService {
   /**
-   * 新增/修改 背景
+   * 新增 / 修改 背景
    */
-  async addOrUpdateHeader({ id, router_name, bg_url }) {
+  async addOrUpdateHeader({ id, route_name, bg_url }) {
     let res
     if (id) {
       // 修改
       res = await Header.update(
-        { router_name, bg_url },
+        { route_name, bg_url },
         {
           where: {
             id,
@@ -19,8 +19,7 @@ class HeaderService {
         }
       )
     } else {
-      // 新增
-      res = await Header.create({ router_name, bg_url })
+      res = await Header.create({ route_name, bg_url })
     }
 
     return res ? true : false
@@ -28,12 +27,14 @@ class HeaderService {
 
   /**
    * 根据id删除背景
+   * @param {*} id
+   * @returns
    */
-  async deleteHeader({ id }) {
+  async deleteHeader(id) {
     let res = await Header.destroy({
       where: {
-        id
-      }
+        id,
+      },
     })
 
     return res ? res : null
@@ -44,19 +45,19 @@ class HeaderService {
    */
   async getAllHeader() {
     let header = await Header.findAll({
-      attributes: ["id", "router_name", "bg_url"],
+      attributes: ["id", "route_name", "bg_url"],
     })
 
     return header
   }
 
   /**
-   * 根据router_name找header
+   * 根据
    */
-  async getOneByPath(router_name) {
+  async getOneByPath(route_name) {
     let header = await Header.findOne({
       where: {
-        router_name,
+        route_name,
       },
     })
 

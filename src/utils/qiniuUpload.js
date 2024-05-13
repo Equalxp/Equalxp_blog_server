@@ -1,4 +1,4 @@
-// 上传到qiniu云
+// 上传到七牛
 let qiniu = require("qiniu") // 需要加载qiniu模块的
 
 const { ACCESSKEY, SECRETKEY, BUCKET } = require("../config/config.default")
@@ -47,6 +47,7 @@ const deleteImgs = imgList => {
   imgList.forEach(v => {
     deleteOperations.push(qiniu.rs.deleteOp(BUCKET, v))
   })
+
   bucketManager.batch(deleteOperations, function (err, respBody, respInfo) {
     if (err) {
       console.log(err)
@@ -68,6 +69,7 @@ const deleteImgs = imgList => {
     }
   })
 }
+
 module.exports = {
   deleteImgs,
   upToQiniu,

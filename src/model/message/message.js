@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize")
 const { Sequelize } = require("sequelize")
-var moment = require('moment')
+var moment = require("moment")
 
-const seq = require('../../db/seq')
+const seq = require("../../db/seq")
 
 const Message = seq.define(
   "blog_message",
@@ -30,7 +30,7 @@ const Message = seq.define(
     type: {
       type: DataTypes.STRING, // STRING 默认255
       require: true,
-      comment: "类型 企鹅、微信、手机号",
+      comment: "类型 qq 企鹅、 wx 微信、 tel 手机号",
     },
     createdAt: {
       type: Sequelize.DATE,

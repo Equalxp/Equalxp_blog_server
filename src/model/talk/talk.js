@@ -12,15 +12,10 @@ const Talk = seq.define(
       require: true,
       comment: "说说内容",
     },
-    nick_name: {
-      type: DataTypes.STRING(255),
+    user_id: {
+      type: DataTypes.INTEGER,
       require: true,
-      comment: "发说说的人",
-    },
-    avatar: {
-      type: DataTypes.STRING(555),
-      require: true,
-      comment: "头像",
+      comment: "发布说说的用户id",
     },
     status: {
       type: DataTypes.INTEGER,
@@ -33,6 +28,11 @@ const Talk = seq.define(
       require: true,
       defaultValue: 2,
       comment: "是否置顶 1 置顶 2 不置顶",
+    },
+    like_times: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      comment: "点赞次数",
     },
     createdAt: {
       type: Sequelize.DATE,

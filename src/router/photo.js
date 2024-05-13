@@ -1,8 +1,9 @@
-// 相冊圖片
-const Router = require('koa-router')
+/**
+ * 关于相册内图片的路由
+ */
+const Router = require("koa-router")
 const router = new Router({ prefix: "/photo" })
 
-// 验证性中间件
 const { auth, adminAuth } = require("../middleware/auth/index")
 const { addPhotos, deletePhotos, getPhotosByAlbumId, revertPhotos, getAllPhotosByAlbumId } = require("../controller/photo/index")
 
@@ -15,7 +16,7 @@ router.put("/delete", auth, adminAuth, deletePhotos)
 // 批量恢复文章
 router.put("/revert", auth, adminAuth, revertPhotos)
 
-// 根据相册id分页获取图片列表
+// 根据相册id 分页获取图片列表
 router.post("/getPhotoListByAlbumId", getPhotosByAlbumId)
 
 // 根据相册id 获取相册的所有图片

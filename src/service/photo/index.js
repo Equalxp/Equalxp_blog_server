@@ -91,9 +91,6 @@ class PhotoService {
     return res
   }
 
-  /**
-   * 获取所有图片列表
-   */
   async getAllPhotosByAlbumId(album_id) {
     let res = await Photo.findAll({
       where: {
