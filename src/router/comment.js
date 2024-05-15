@@ -9,7 +9,7 @@ const { auth, adminAuth } = require("../middleware/auth/index")
 const { addComment, deleteComment, applyComment, thumbUpComment, cancelThumbUp, backGetCommentList, frontGetParentComment, frontGetChildrenComment } = require("../controller/comment/index")
 
 // 新增评论
-router.post("/add", auth, addComment)
+router.post("/add", addComment)
 
 // 回复评论
 router.post("/apply", applyComment)

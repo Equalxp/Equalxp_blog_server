@@ -190,12 +190,9 @@ class TalkService {
     })
 
     await Promise.all(userList).then((res) => {
-      rows.forEach((row) => {
-        let index = res.findIndex((re) => re.id == row.user_id)
-        if (index != -1) {
-          row.dataValues.nick_name = res[index].nick_name
-          row.dataValues.avatar = res[index].avatar
-        }
+      res.forEach((r, index) => {
+        rows[index].dataValues.nick_name = r.nick_name
+        rows[index].dataValues.avatar = r.avatar
       })
     })
 
@@ -209,7 +206,6 @@ class TalkService {
 
   // 根据id获取说说详情
   async getTalkById(id) {
-    let res = await Talk.findByPk(id)
 
     let imgs = await getPhotoByTalkId(id)
 
@@ -257,12 +253,9 @@ class TalkService {
     })
 
     await Promise.all(userList).then((res) => {
-      rows.forEach((row) => {
-        let index = res.findIndex((re) => re.id == row.user_id)
-        if (index != -1) {
-          row.dataValues.nick_name = res[index].nick_name
-          row.dataValues.avatar = res[index].avatar
-        }
+      res.forEach((r, index) => {
+        rows[index].dataValues.nick_name = r.nick_name
+        rows[index].dataValues.avatar = r.avatar
       })
     })
 

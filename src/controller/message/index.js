@@ -1,7 +1,7 @@
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.MESSAGE
 
-const { addMessage, deleteMessage, getMessageList } = require("../../service/message/index")
+const { addMessage, deleteMessage, getMessageList, updateMessage, likeMessage, cancelLikeMessage } = require("../../service/message/index");
 const { randomNickname } = require("../../utils/tool")
 const { addNotify } = require("../notify/index")
 
@@ -14,14 +14,12 @@ class MessageController {
   async addMessage(ctx) {
     try {
       let { nick_name } = ctx.request.body
-      let { userId, message, contact, type, avatar } = ctx.request.body
-      if (!nick_name) {
-        nick_name = randomNickname("游客")
-      }
+      let { user_id, message } = ctx.request.body
+
       message = await filterSensitive(message)
-      const res = await addMessage({ message, contact, type, nick_name, avatar })
+      const res = await addMessage(ctx.request.body)
       // 发布消息推送
-      if (!userId || userId != 1) {
+      if (!user_id || userId != 1) {
         await addNotify({
           user_id: 1,
           type: 3,
@@ -37,6 +35,24 @@ class MessageController {
   }
 
   /**
+   * 修改留言
+   * @param {*} ctx 
+   */
+  async updateMessage(ctx) {
+    try {
+      let { message } = ctx.request.body;
+
+      message = await filterSensitive(message);
+      const res = await updateMessage(ctx.request.body);
+
+      ctx.body = result("修改成功", res);
+    } catch (err) {
+      console.error(err);
+      return ctx.app.emit("error", throwError(errorCode, "修改失败"), ctx);
+    }
+  }
+
+  /**
    * 删除留言
    */
   async deleteMessage(ctx) {
@@ -48,6 +64,34 @@ class MessageController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "删除留言失败"), ctx)
+    }
+  }
+
+  /**
+ * 留言点赞
+ */
+  async likeMessage(ctx) {
+    try {
+      const res = await likeMessage(ctx.params.id);
+
+      ctx.body = result("留言点赞成功", res);
+    } catch (err) {
+      console.error(err);
+      return ctx.app.emit("error", throwError(errorCode, "留言点赞失败"), ctx);
+    }
+  }
+
+  /**
+   * 取消留言点赞
+   */
+  async cancelLikeMessage(ctx) {
+    try {
+      const res = await cancelLikeMessage(ctx.params.id);
+
+      ctx.body = result("取消留言点赞成功", res);
+    } catch (err) {
+      console.error(err);
+      return ctx.app.emit("error", throwError(errorCode, "取消留言点赞失败"), ctx);
     }
   }
 

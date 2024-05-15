@@ -143,13 +143,10 @@ class CommentService {
     })
 
     await Promise.all(promiseList1).then((result) => {
-      result.forEach((r) => {
+      result.forEach((r, index) => {
         if (r) {
-          let index = rows.findIndex((row) => row.from_id == r.id)
-          if (index != -1) {
-            rows[index].from_avatar = r.avatar
-            rows[index].form_name = r.nick_name
-          }
+          rows[index].dataValues.from_avatar = r.avatar
+          rows[index].dataValues.form_name = r.nick_name
         }
       })
     })
@@ -164,13 +161,10 @@ class CommentService {
     })
 
     await Promise.all(promiseList2).then((result) => {
-      result.forEach((r) => {
+      result.forEach((r, index) => {
         if (r) {
-          let index = rows.findIndex((row) => row.to_id == r.id)
-          if (index != -1) {
-            rows[index].to_avatar = r.avatar
-            rows[index].to_name = r.nick_name
-          }
+          rows[index].dataValues.to_avatar = r.avatar
+          rows[index].dataValues.to_name = r.nick_name
         }
       })
     })
@@ -280,13 +274,10 @@ class CommentService {
     })
 
     await Promise.all(promiseList1).then((result) => {
-      result.forEach((r) => {
+      result.forEach((r, index) => {
         if (r) {
-          let index = rows.findIndex((row) => row.from_id == r.id)
-          if (index != -1) {
-            rows[index].dataValues.from_avatar = r.avatar
-            rows[index].dataValues.form_name = r.nick_name
-          }
+          rows[index].dataValues.from_avatar = r.avatar
+          rows[index].dataValues.form_name = r.nick_name
         }
       })
     })
@@ -301,13 +292,10 @@ class CommentService {
     })
 
     await Promise.all(promiseList2).then((result) => {
-      result.forEach((r) => {
+      result.forEach((r, index) => {
         if (r) {
-          let index = rows.findIndex((row) => row.to_id == r.id)
-          if (index != -1) {
-            rows[index].dataValues.to_avatar = r.avatar
-            rows[index].dataValues.to_name = r.nick_name
-          }
+          rows[index].dataValues.to_avatar = r.avatar
+          rows[index].dataValues.to_name = r.nick_name
         }
       })
     })

@@ -43,11 +43,7 @@ genOpenApiMark("/add", {
         "application/json": {
           schema: {
             properties: {
-              pid: {
-                description: "评论的父级节点",
-                type: "string",
-                require: true,
-              },
+              res: 'string'
             },
           },
         },

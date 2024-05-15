@@ -8,12 +8,12 @@ const { auth } = require("../middleware/auth/index")
 const { addLike, cancelLike, getIsLikeByIdAndType } = require("../controller/like/index")
 
 // 点赞
-router.post("/addLike", auth, addLike)
+router.post("/addLike", addLike)
 
 // 取消点赞
-router.post("/cancelLike", auth, cancelLike)
+router.post("/cancelLike", cancelLike)
 
 // 获取当前用户对当前文章/说说/留言 是否点赞
-router.post("/getIsLikeByIdAndType", auth, getIsLikeByIdAndType)
+router.post("/getIsLikeByIdAndType", getIsLikeByIdAndType)
 
 module.exports = router

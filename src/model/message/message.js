@@ -12,25 +12,28 @@ const Message = seq.define(
       require: true,
       comment: "留言内容",
     },
-    contact: {
+    color: {
       type: DataTypes.STRING, // STRING 默认255
-      require: true,
-      comment: "联系方式",
+      comment: "字体颜色",
+      defaultValue: '#676767'
     },
-    nick_name: {
+    font_size: {
+      type: DataTypes.INTEGER, // STRING 默认255
+      comment: "字体大小",
+      defaultValue: 12,
+    },
+    bg_color: {
       type: DataTypes.STRING, // STRING 默认255
-      require: true,
-      comment: "昵称",
-    },
-    avatar: {
-      type: DataTypes.STRING(555),
-      require: true,
-      comment: "头像",
+      comment: "背景颜色",
     },
     type: {
-      type: DataTypes.STRING, // STRING 默认255
-      require: true,
-      comment: "类型 qq 企鹅、 wx 微信、 tel 手机号",
+      type: DataTypes.INTEGER,
+      comment: "留言类型 1 喜悦 2 热烈 3 清新 4 伤感 5 春 6 夏 7 秋 8 冬 9 风景 10 美食 11 萌宠 12 代码",
+    },
+    like_times: {
+      type: DataTypes.INTEGER,
+      comment: "点赞次数",
+      defaultValue: 0
     },
     createdAt: {
       type: Sequelize.DATE,
