@@ -56,9 +56,11 @@ class PhotoAlbumController {
         return ctx.app.emit("error", throwError(errorCode, "已经存在相同的相册名称，换一个试试"), ctx)
       }
 
+      let album = await getOneAlbum({ id })
+
       // 删除原来存储的照片
-      if (UPLOADTYPE == "qiniu" && album_cover != one.album_cover) {
-        await deleteImgs([one.album_cover.split("/").pop()])
+      if (UPLOADTYPE == "qiniu" && album_cover != album.album_cover) {
+        await deleteImgs([album.album_cover.split("/").pop()])
       }
 
       const res = await updateAlbum(ctx.request.body)

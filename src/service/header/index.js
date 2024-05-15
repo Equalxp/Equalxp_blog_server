@@ -61,7 +61,7 @@ class HeaderService {
       },
     })
 
-    return header ? true : false
+    return header ? header.dataValues : null
   }
 }
 

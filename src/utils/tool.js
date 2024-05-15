@@ -57,7 +57,13 @@ function getCurrentTypeName(type) {
   return res;
 }
 
+// 判断网址是否带http / https
+function isValidUrl(url) {
+  return url.indexOf('http') != -1 || url.indexOf('https') != -1
+}
+
 module.exports = {
+  isValidUrl,
   getIpAddress,
   randomNickname,
   getCurrentTypeName

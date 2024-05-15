@@ -31,6 +31,18 @@ const Message = seq.define(
       type: DataTypes.STRING, // STRING 默认255
       comment: "背景颜色",
     },
+    bg_url: {
+      type: DataTypes.STRING, // STRING 默认255
+      comment: "背景图片",
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      comment: "留言用户的id",
+    },
+    nick_name: {
+      type: DataTypes.STRING,
+      comment: "游客用户的昵称",
+    },
     type: {
       type: DataTypes.INTEGER,
       comment: "留言类型 1 喜悦 2 热烈 3 清新 4 伤感 5 春 6 夏 7 秋 8 冬 9 风景 10 美食 11 萌宠 12 代码",

@@ -8,6 +8,8 @@ const { updateConfig, getConfig, addView } = require("../../service/config/index
 const fs = require("fs")
 const { upToQiniu, deleteImgs } = require("../../utils/qiniuUpload")
 const { UPLOADTYPE, BASEURL } = require("../../config/config.default")
+const { isValidUrl } = require("../../utils/tool")
+
 class UtilsController {
   // 图片上传
   async upload(ctx) {
@@ -22,9 +24,10 @@ class UtilsController {
         const fileUrl = file.name
         // 调用方法
         const res = await upToQiniu(reader, fileUrl)
+        let completeUrl = isValidUrl(BASEURL) ? BASEURL : 'http://' + BASEURL
         if (res) {
           ctx.body = result("图片上传成功", {
-            url: BASEURL + res.hash,
+            url: completeUrl + res.hash,
           })
         }
       } else {

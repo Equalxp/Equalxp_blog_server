@@ -6,6 +6,8 @@ const { randomNickname } = require("../../utils/tool")
 const { addNotify } = require("../notify/index")
 
 const filterSensitive = require("../../utils/sensitive")
+const { randomNickname } = require("../../utils/tool")
+
 
 class MessageController {
   /**
@@ -13,11 +15,13 @@ class MessageController {
    */
   async addMessage(ctx) {
     try {
-      let { nick_name } = ctx.request.body
-      let { user_id, message } = ctx.request.body
+      let { user_id, message, nick_name, ...rest } = ctx.request.body;
+      if (!user_id) {
+        nick_name = randomNickname("游客", 5)
+      }
 
       message = await filterSensitive(message)
-      const res = await addMessage(ctx.request.body)
+      const res = await addMessage({ nick_name, user_id, message, ...rest })
       // 发布消息推送
       if (!user_id || userId != 1) {
         await addNotify({

@@ -18,8 +18,14 @@ class HeaderController {
           return ctx.app.emit("error", throwError(errorCode, "已经存在相同的背景路径"), ctx)
         }
       }
+      if (id) {
+        const flag = await getOneByPath(route_name);
+        if (flag.id != id) {
+          return ctx.app.emit("error", throwError(errorCode, "已经存在相同的背景路径"), ctx);
+        }
+      }
       const res = await addOrUpdateHeader(ctx.request.body)
-      const msg = id ? "修改" : "新增"
+      let msg = id ? "修改" : "新增"
       ctx.body = result(msg + "背景成功", res)
     } catch (err) {
       console.error(err)
@@ -39,7 +45,7 @@ class HeaderController {
         // 远程删除图片
         const arr = []
         arr.push(url.split("/").pop())
-        if (UPLOADTYPE == "qiniu" && type == 2) {
+        if (UPLOADTYPE == "qiniu") {
           await deleteImgs(arr)
         }
       }

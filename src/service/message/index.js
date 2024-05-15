@@ -12,8 +12,8 @@ class MessageService {
   /**
    * 发布留言
    */
-  async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type }) {
-    const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type })
+  async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type, nick_name }) {
+    const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type, nick_name });
 
     return res ? true : false
   }
@@ -106,8 +106,15 @@ class MessageService {
     // 根据用户form_id获取用户当前的昵称和头像
     const promiseList = rows.map(async (row) => {
       let res
-      res = await getOneUserInfo({ id: row.user_id })
-      return res
+      if (row.user_id) {
+        res = await getOneUserInfo({ id: row.user_id })
+        return res
+      } else {
+        return {
+          nick_name: row.nick_name,
+          avatar: ''
+        }
+      }
     })
 
     await Promise.all(promiseList).then((result) => {
@@ -137,7 +144,6 @@ class MessageService {
     })
     await Promise.all(promiseCommentList).then((result) => {
       result.forEach((r, index) => {
-        console.log(r)
         rows[index].dataValues.comment_total = r
       })
     })

@@ -4,7 +4,6 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/message" })
 
-const { auth } = require("../middleware/auth/index");
 const { addMessage, updateMessage, deleteMessage, likeMessage, cancelLikeMessage, getMessageList } = require("../controller/message/index");
 
 // 新增留言

@@ -16,11 +16,13 @@ class HeaderController {
       if (!type) {
         return ctx.app.emit("error", throwError(errorCode, "点赞类型不能为空"), ctx)
       }
+      let res
       if (!user_id) {
-        return ctx.app.emit("error", throwError(errorCode, "点赞用户不能为空"), ctx)
+        res = false
+      } else {
+        res = await addLike({ for_id, type, user_id })
       }
 
-      const res = await addLike({ for_id, type, user_id })
       ctx.body = result("点赞成功", res)
     } catch (err) {
       console.error(err)
@@ -40,11 +42,12 @@ class HeaderController {
       if (!type) {
         return ctx.app.emit("error", throwError(errorCode, "取消点赞类型不能为空"), ctx)
       }
+      let res
       if (!user_id) {
-        return ctx.app.emit("error", throwError(errorCode, "取消点赞用户不能为空"), ctx)
+        res = false
+      } else {
+        res = await cancelLike({ for_id, type, user_id })
       }
-
-      const res = await cancelLike({ for_id, type, user_id })
 
       ctx.body = result("取消点赞成功", res)
     } catch (err) {
@@ -60,14 +63,15 @@ class HeaderController {
       if (!for_id) {
         return ctx.app.emit("error", throwError(errorCode, "取消点赞对象不能为空"), ctx)
       }
+      let res
       if (!type) {
-        return ctx.app.emit("error", throwError(errorCode, "取消点赞类型不能为空"), ctx)
+        res = false
+      } else {
+        res = await getIsLikeByIdAndType({ for_id, type, user_id })
       }
       if (!user_id) {
         return ctx.app.emit("error", throwError(errorCode, "取消点赞用户不能为空"), ctx)
       }
-
-      const res = await getIsLikeByIdAndType({ for_id, type, user_id })
 
       ctx.body = result("获取用户是否点赞成功", res)
     } catch (err) {

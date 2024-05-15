@@ -57,7 +57,7 @@ class NotifyService {
       offset,
       limit,
       where: whereOpt,
-      order: [["isView", "ASC"]]
+      order: [["isView", "ASC"], ["createdAt", "DESC"]]
     })
 
     return {

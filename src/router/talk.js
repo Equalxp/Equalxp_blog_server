@@ -30,7 +30,7 @@ router.post("/getTalkList", getTalkList)
 // 获取说说详情
 router.get("/getTalkById/:id", getTalkById)
 
-// 文章点赞
+// 说说点赞
 router.put("/like/:id", talkLike)
 
 // 取消点赞
