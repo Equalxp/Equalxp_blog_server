@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "nodemon bin/www",
-    "dev": "./node_modules/.bin/nodemon bin/www",
-    "prd": "pm2 start bin/www",
+    "serve": "nodemon app.js",
+    "dev": "./node_modules/.bin/nodemon app.js",
+    "prd": "pm2 start app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -16,7 +16,6 @@
     "jsonwebtoken": "^9.0.0",
     "koa": "^2.7.0",
     "koa-body": "^6.0.1",
-    "koa-bodyparser": "^4.2.1",
     "koa-convert": "^1.2.0",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.0",
