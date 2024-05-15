@@ -31,7 +31,6 @@ const Config = seq.define(
     },
     blog_notice: {
       type: DataTypes.STRING,
-      require: true,
       comment: "博客公告",
     },
     qq_link: {
@@ -64,6 +63,22 @@ const Config = seq.define(
       require: true,
       defaultValue: 0,
       comment: "博客被访问的次数",
+    },
+    we_chat_group: {
+      type: DataTypes.STRING,
+      comment: "微信群图片",
+    },
+    qq_group: {
+      type: DataTypes.STRING,
+      comment: "qq群图片",
+    },
+    we_chat_pay: {
+      type: DataTypes.STRING,
+      comment: "微信收款码",
+    },
+    ali_pay: {
+      type: DataTypes.STRING,
+      comment: "支付宝收款码",
     },
     createdAt: {
       type: Sequelize.DATE,

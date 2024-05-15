@@ -191,8 +191,10 @@ class TalkService {
 
     await Promise.all(userList).then((res) => {
       res.forEach((r, index) => {
-        rows[index].dataValues.nick_name = r.nick_name
-        rows[index].dataValues.avatar = r.avatar
+        if (r) {
+          rows[index].dataValues.nick_name = r.nick_name
+          rows[index].dataValues.avatar = r.avatar
+        }
       })
     })
 
@@ -255,8 +257,10 @@ class TalkService {
 
     await Promise.all(userList).then((res) => {
       res.forEach((r, index) => {
-        rows[index].dataValues.nick_name = r.nick_name
-        rows[index].dataValues.avatar = r.avatar
+        if (r) {
+          rows[index].dataValues.nick_name = r.nick_name
+          rows[index].dataValues.avatar = r.avatar
+        }
       })
     })
 

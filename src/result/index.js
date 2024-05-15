@@ -18,6 +18,7 @@ const ERRORCODE = {
   AUTHTOKEN: "100016", // 用户登录过期
   NOTIFY: "100017", // 消息推送
   LIKE: "100018", // 点赞
+  TIPS: "111111", // 提示
 }
 
 /**
@@ -31,6 +32,19 @@ function result(message, result) {
     code: 0,
     message,
     result,
+  }
+}
+
+/**
+ * 公共返回提示方法
+ * @param {*} message 提示信息
+ * @param {*} result 结果
+ * @returns
+ */
+function tipsResult(message) {
+  return {
+    code: 100,
+    message,
   }
 }
 
@@ -51,4 +65,5 @@ module.exports = {
   ERRORCODE,
   result,
   throwError,
+  tipsResult,
 }

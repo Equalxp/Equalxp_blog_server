@@ -4,17 +4,29 @@ const { getCategoryNameById } = require("../category/index")
 const { getAuthorNameById } = require("../user/index")
 const { Op } = require("sequelize")
 
+// const Photo = require('../../model/photo/photo') 
+// const PhotoAlbum = require('../../model/photo/photoAlbum')  
+// const TalkPhoto = require('../../model/talk/talkPhoto')
+// const User = require('../../model/user/user')
+// const Message = require('../../model/message/message')
+// const Header = require('../../model/header/header')
+// const Config = require('../../model/config/config')
+// const Comment = require('../../model/comment/comment')
+
+
+
 class ArticleService {
-  // 替换url
+  // 批量替换url
   async updateUrl() {
     let res = await Article.findAll()
     res.forEach(async (v) => {
-      v.dataValues.article_cover = v.dataValues.article_cover.replace("http://rs8h1phj4.hn-bkt.clouddn.com/", "http://img.mrzym.top/")
-      await Config.update(v.dataValues, {
+      v.dataValues.article_cover = v.dataValues.article_cover.replace("http://img.mrzym.top/", "http://mrzym.top/online/")
+      await Article.update(v.dataValues, {
         where: {
           id: v.dataValues.id,
         },
       })
+
     })
   }
 
@@ -517,7 +529,6 @@ class ArticleService {
         },
         status: 1,
       },
-      // 查找指定属性
       attributes: ["id", "article_title", "article_content", "view_times"],
       limit: 8,
       order: [["view_times", "DESC"]],
@@ -557,6 +568,7 @@ class ArticleService {
 
   /**
    * 文章点赞
+   * @param {*} id
    */
   async articleLike(id) {
     let article = await Article.findByPk(id)

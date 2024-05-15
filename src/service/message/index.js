@@ -1,9 +1,8 @@
 const { Op } = require("sequelize")
 const Message = require("../../model/message/message")
-const { getOneUserInfo } = require('../user/index')
+const { getOneUserInfo } = require("../user/index")
 const { getIsLikeByIdAndType } = require("../like/index")
-const { getCommentTotal } = require('../comment/index')
-
+const { getCommentTotal } = require("../comment/index")
 
 /**
  * 留言服务层
@@ -13,7 +12,6 @@ class MessageService {
    * 发布留言
    */
   async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, tag, nick_name }) {
-
     const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, tag, nick_name })
 
     return res ? true : false
@@ -27,8 +25,8 @@ class MessageService {
       { message, color, font_size, font_weight, bg_color, bg_url, tag },
       {
         where: {
-          id
-        }
+          id,
+        },
       }
     )
 
@@ -76,7 +74,6 @@ class MessageService {
     return message ? true : false
   }
 
-
   /**
    * 分页获取留言
    */
@@ -84,9 +81,10 @@ class MessageService {
     const offset = (current - 1) * size
     const limit = size * 1
     const whereOpt = {}
-    tag && Object.assign(whereOpt, {
-      tag
-    })
+    tag &&
+      Object.assign(whereOpt, {
+        tag,
+      })
     message &&
       Object.assign(whereOpt, {
         message: {
@@ -115,7 +113,7 @@ class MessageService {
       } else {
         return {
           nick_name: row.nick_name,
-          avatar: ''
+          avatar: "",
         }
       }
     })
@@ -166,9 +164,9 @@ class MessageService {
     let all = await Message.findAll()
     let arr = []
     if (all.length) {
-      all.forEach(v => {
+      all.forEach((v) => {
         if (v.dataValues.tag) {
-          let index = arr.findIndex(item => item.tag == v.dataValues.tag)
+          let index = arr.findIndex((item) => item.tag == v.dataValues.tag)
           if (index == -1) {
             arr.push({ tag: v.dataValues.tag, count: 1 })
           } else {
@@ -177,7 +175,6 @@ class MessageService {
         }
       })
     }
-
 
     for (let i = 0 i < arr.length i++) {
       for (let j = i + 1 j < arr.length j++) {

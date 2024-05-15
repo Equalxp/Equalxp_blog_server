@@ -12,20 +12,13 @@ class UserService {
    */
   async createUser(user) {
     let { username, password, nick_name, qq } = user
-    let role
-    if (username === "admin") {
-      role = 1
-      nick_name = "尊贵的系统管理员"
-    } else {
-      role = 2
-    }
 
     // 过滤敏感词
     nick_name = await filterSensitive(nick_name)
     // 随机生成昵称
     nick_name = nick_name ? nick_name : randomNickname("小张的迷弟")
-    const avatar = "http://img.mrzym.top/Fpet0b3C-UBzDZBeTnDk_pMDRQyD"
-    const res = await User.create({ username, password, nick_name, qq, avatar, role })
+    const avatar = "http://mrzym.top/online/9bb507f4bd065759a3d093d04.webp"
+    const res = await User.create({ username, password, nick_name, qq, avatar, role: 2 })
 
     return res.dataValues
   }

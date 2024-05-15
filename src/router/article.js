@@ -1,6 +1,6 @@
 const Router = require("koa-router")
 
-const { auth, adminAuth } = require("../middleware/auth/index")
+const { auth, needAdminAuthNotNeedSuper } = require("../middleware/auth/index")
 
 const router = new Router({ prefix: "/article" })
 
@@ -32,7 +32,7 @@ const { updateUrl } = require("../service/article/index")
 const { genOpenApiMark } = require("../utils/swagger.js")
 
 /** 后台 start */
-// 创建文章
+// swagger 文档 没有实体类，写接口文档太难了，不想写
 genOpenApiMark("/add", {
   post: {
     description: "添加文章",
@@ -57,22 +57,23 @@ genOpenApiMark("/add", {
     },
   },
 })
-router.post("/add", auth, adminAuth, verifyArticleParam, createJudgeTitleExist, createArticle)
+// 创建文章 
+router.post("/add", auth, needAdminAuthNotNeedSuper, verifyArticleParam, createJudgeTitleExist, createArticle)
 
 // 修改文章
-router.put("/update", auth, adminAuth, verifyArticleParam, updateJudgeTitleExist, updateArticle)
+router.put("/update", auth, needAdminAuthNotNeedSuper, verifyArticleParam, updateJudgeTitleExist, updateArticle)
 
 // 修改文章置顶状态
-router.put("/updateTop/:id/:is_top", auth, adminAuth, verifyTopParam, updateTop)
+router.put("/updateTop/:id/:is_top", auth, needAdminAuthNotNeedSuper, verifyTopParam, updateTop)
 
 // 删除文章
-router.delete("/delete/:id/:status", auth, adminAuth, verifyDelParam, deleteArticle)
+router.delete("/delete/:id/:status", auth, needAdminAuthNotNeedSuper, verifyDelParam, deleteArticle)
 
 // 恢复文章
-router.put("/revert/:id", auth, adminAuth, revertArticle)
+router.put("/revert/:id", auth, needAdminAuthNotNeedSuper, revertArticle)
 
 // 切换文章私密性
-router.put("/isPublic/:id/:status", auth, adminAuth, verifyDelParam, toggleArticlePublic)
+router.put("/isPublic/:id/:status", auth, needAdminAuthNotNeedSuper, verifyDelParam, toggleArticlePublic)
 
 // 根据文章标题判断文章是否被注册过
 router.post("/titleExist", getArticleInfoByTitle)
@@ -119,6 +120,8 @@ router.put("/addReadingDuration/:id/:duration", addReadingDuration)
 router.get("/getArticleById/:id", getArticleById)
 /** 公共 end */
 
+// 批量替换url
+// 文章cover图片地址整体迁移 修改全部文章的url地址 主要是之前七牛云的域名不是当前的
 router.post("/updateUrl", updateUrl)
 
 module.exports = router

@@ -4,7 +4,6 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/like" })
 
-const { auth } = require("../middleware/auth/index")
 const { addLike, cancelLike, getIsLikeByIdAndType } = require("../controller/like/index")
 
 // 点赞

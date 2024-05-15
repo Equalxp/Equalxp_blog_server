@@ -33,7 +33,8 @@ const auth = async (ctx, next) => {
   await next()
 }
 
-const adminAuth = async (ctx, next) => {
+// 对需要管理员发布信息，但是不建议超级管理员发布信息的接口进行提示
+const needAdminAuthNotNeedSuper = async (ctx, next) => {
   const { role, username } = ctx.state.user
   if (Number(role) !== 1) {
     console.error("普通用户仅限查看")
@@ -42,6 +43,16 @@ const adminAuth = async (ctx, next) => {
   if (username == 'admin') {
     console.error("admin是配置的用户，没有用户信息，建议注册账号再发布博客内容")
     return ctx.app.emit("error", throwError(errorCode, "admin是配置的用户，没有用户信息，建议注册账号再发布博客内容"), ctx)
+  }
+  await next()
+}
+
+// 对需要管理员权限的进行操作进行提示
+const needAdminAuth = async (ctx, next) => {
+  const { role, username } = ctx.state.user
+  if (Number(role) !== 1) {
+    console.error("普通用户仅限查看")
+    return ctx.app.emit("error", throwError(errorCode, "普通用户仅限查看"), ctx)
   }
   await next()
 }
@@ -57,6 +68,7 @@ const isSuperAdmin = async (ctx, next) => {
 
 module.exports = {
   auth,
-  adminAuth,
-  isSuperAdmin
+  needAdminAuthNotNeedSuper,
+  isSuperAdmin,
+  needAdminAuth
 }

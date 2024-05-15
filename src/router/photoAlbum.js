@@ -4,17 +4,17 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/photoAlbum" })
 
-const { auth, adminAuth } = require("../middleware/auth/index")
+const { auth, needAdminAuthNotNeedSuper } = require("../middleware/auth/index")
 const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getAllAlbumList } = require("../controller/photoAlbum/index")
 
 // 新增相册
-router.post("/add", auth, adminAuth, addAlbum)
+router.post("/add", auth, needAdminAuthNotNeedSuper, addAlbum)
 
 // 删除相册
-router.delete("/delete/:id", auth, adminAuth, deleteAlbum)
+router.delete("/delete/:id", auth, needAdminAuthNotNeedSuper, deleteAlbum)
 
 // 修改相册
-router.put("/update", auth, adminAuth, updateAlbum)
+router.put("/update", auth, needAdminAuthNotNeedSuper, updateAlbum)
 
 // 分页获取相册列表
 router.post("/", getAlbumList)

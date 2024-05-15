@@ -29,6 +29,8 @@ const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.ARTICLE
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
+const { deleteOnlineImgs } = require("../utils/index")
+
 
 class ArticleController {
   /**
@@ -71,9 +73,15 @@ class ArticleController {
       const { tagList, category, ...articleRest } = ctx.request.body.article
       let oldCover = await getArticleCoverById(articleRest.id)
       // 服务器删除图片
-      if (UPLOADTYPE == "qiniu" && oldCover && oldCover != articleRest.article_cover) {
-        await deleteImgs([oldCover.split("/").pop()])
+      if (oldCover && oldCover != articleRest.article_cover) {
+        if (UPLOADTYPE == "qiniu") {
+          await deleteImgs([oldCover.split("/").pop()])
+        }
+        if (UPLOADTYPE == 'online') {
+          await deleteOnlineImgs([oldCover.split("/").pop()])
+        }
       }
+
       // 先删除这个文章与标签之前的关联
       await deleteArticleTag(articleRest.id)
       // 判断新的分类是新增的还是已经存在的 并且返回分类id
@@ -118,11 +126,15 @@ class ArticleController {
     try {
       const { id, status } = ctx.params
 
-      if (UPLOADTYPE == "qiniu") {
-        if (Number(status) === 3) {
-          let oldCover = await getArticleCoverById(id)
+      if (Number(status) === 3) {
+        let oldCover = await getArticleCoverById(id)
+        if (UPLOADTYPE == "qiniu") {
+          // 七牛云删除图片
+          oldCover && await deleteImgs([oldCover.split("/").pop()])
+        }
+        if (UPLOADTYPE == 'online') {
           // 服务器删除图片
-          oldCover ? await deleteImgs([oldCover.split("/").pop()]) : ""
+          oldCover && await deleteOnlineImgs([oldCover.split("/").pop()])
         }
       }
 

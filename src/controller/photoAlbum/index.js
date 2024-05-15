@@ -4,6 +4,7 @@ const errorCode = ERRORCODE.PHOTOALBUM
 const { addAlbum, deleteAlbum, updateAlbum, getAlbumList, getOneAlbum, getAllAlbumList } = require("../../service/photoAlbum/index")
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
+const { deleteOnlineImgs } = require("../../controller/utils/index")
 
 class PhotoAlbumController {
   /**
@@ -35,6 +36,9 @@ class PhotoAlbumController {
       if (UPLOADTYPE == "qiniu") {
         await deleteImgs([one.album_cover.split("/").pop()])
       }
+      if (UPLOADTYPE == 'online') {
+        await deleteOnlineImgs([one.album_cover.split("/").pop()])
+      }
       const res = await deleteAlbum(id)
 
       ctx.body = result("删除相册成功", res)
@@ -61,6 +65,9 @@ class PhotoAlbumController {
       // 删除原来存储的照片
       if (UPLOADTYPE == "qiniu" && album_cover != album.album_cover) {
         await deleteImgs([album.album_cover.split("/").pop()])
+      }
+      if (UPLOADTYPE == 'online') {
+        await deleteOnlineImgs([one.album_cover.split("/").pop()])
       }
 
       const res = await updateAlbum(ctx.request.body)

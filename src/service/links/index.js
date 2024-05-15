@@ -1,6 +1,8 @@
 const { Op } = require("sequelize")
 const Links = require("../../model/links/links")
-
+/**
+ * 友链服务层
+ */
 class LinksService {
   /**
    * 新增/编辑友链

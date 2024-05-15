@@ -49,6 +49,7 @@ class HeaderController {
         res = await cancelLike({ for_id, type, user_id })
       }
 
+
       ctx.body = result("取消点赞成功", res)
     } catch (err) {
       console.error(err)

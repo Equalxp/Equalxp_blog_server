@@ -8,7 +8,6 @@ const { addMessage, updateMessage, deleteMessage, likeMessage, cancelLikeMessage
 
 // 新增留言
 router.post("/add", addMessage)
-
 // 修改留言
 router.post("/update", updateMessage)
 

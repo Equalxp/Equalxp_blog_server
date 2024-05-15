@@ -2,6 +2,8 @@ const { Op } = require("sequelize")
 const TalkPhoto = require("../../model/talk/talkPhoto.js")
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
+const { deleteOnlineImgs } = require("../../controller/utils/index.js")
+
 /**
  * 说说图片服务层
  */
@@ -22,16 +24,19 @@ class TalkPhotoService {
    * @param {*} talk_id
    */
   async deleteTalkPhoto(talk_id) {
+    let urlList = await TalkPhoto.findAll({
+      attributes: ["url"],
+      where: {
+        talk_id,
+      }
+    })
+    // 远程删除图片
+    let keys = urlList.map(v => v.dataValues.url.split("/").pop())
     if (UPLOADTYPE == "qiniu") {
-      let urlList = await TalkPhoto.findAll({
-        attributes: ["url"],
-        where: {
-          talk_id,
-        }
-      })
-       // 远程删除图片
-      let keys = urlList.map(v => v.dataValues.url.split("/").pop())
       await deleteImgs(keys)
+    }
+    if (UPLOADTYPE == 'online') {
+      await deleteOnlineImgs(keys)
     }
     const res = await TalkPhoto.destroy({
       where: {

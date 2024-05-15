@@ -1,28 +1,26 @@
-// 说说路由
-
-const Router = require('koa-router')
+const Router = require("koa-router")
 const router = new Router({ prefix: "/talk" })
 
-const { auth, adminAuth } = require("../middleware/auth/index")
+const { auth, needAdminAuthNotNeedSuper } = require("../middleware/auth/index")
 const { publishTalk, updateTalk, deleteTalkById, togglePublic, toggleTop, revertTalk, getTalkList, getTalkById, talkLike, cancelTalkLike, blogGetTalkList } = require("../controller/talk/index")
 
 // 发布说说
-router.post("/publishTalk", auth, adminAuth, publishTalk)
+router.post("/publishTalk", auth, needAdminAuthNotNeedSuper, publishTalk)
 
 // 修改说说
-router.put("/updateTalk", auth, adminAuth, updateTalk)
+router.put("/updateTalk", auth, needAdminAuthNotNeedSuper, updateTalk)
 
 // 删除说说
-router.delete("/deleteTalkById/:id/:status", auth, adminAuth, deleteTalkById)
+router.delete("/deleteTalkById/:id/:status", auth, needAdminAuthNotNeedSuper, deleteTalkById)
 
 // 修改说说公开私密状态 1 公开 2 私密
-router.put("/togglePublic/:id/:status", auth, adminAuth, togglePublic)
+router.put("/togglePublic/:id/:status", auth, needAdminAuthNotNeedSuper, togglePublic)
 
 // 修改说说公开置顶状态 1 置顶 2 不置顶
-router.put("/toggleTop/:id/:is_top", auth, adminAuth, toggleTop)
+router.put("/toggleTop/:id/:is_top", auth, needAdminAuthNotNeedSuper, toggleTop)
 
 // 恢复说说 从3回收站恢复到1
-router.put("/revertTalk/:id", auth, adminAuth, revertTalk)
+router.put("/revertTalk/:id", auth, needAdminAuthNotNeedSuper, revertTalk)
 
 // 分页获取说说
 router.post("/getTalkList", getTalkList)

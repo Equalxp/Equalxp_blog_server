@@ -37,13 +37,25 @@ if (UPLOADTYPE == "qiniu") {
       multipart: true, // 支持文件上传
     })
   )
+} else if (UPLOADTYPE == 'online') {
+  // 上传到服务器
+  app.use(
+    koaBody({
+      multipart: true, // 支持文件上传
+      formidable: {
+        uploadDir: path.join(__dirname, "./upload/online"), // 设置文件上传目录
+        keepExtensions: true, // 保持文件的后缀
+        maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
+      },
+    })
+  )
 } else {
   // 本地上传
   app.use(
     koaBody({
       multipart: true, // 支持文件上传
       formidable: {
-        uploadDir: path.join(__dirname, "./upload"), // 设置文件上传目录
+        uploadDir: path.join(__dirname, "./upload/local"), // 设置文件上传目录
         keepExtensions: true, // 保持文件的后缀
         maxFieldsSize: 2 * 1024 * 1024, // 文件上传大小
       },
@@ -53,8 +65,10 @@ if (UPLOADTYPE == "qiniu") {
 
 app.use(json())
 app.use(logger())
-// koa-static 博客本地静态访问
+// koa-static 博客图片静态访问
 app.use(require("koa-static")(path.join(__dirname, "./upload")))
+
+
 
 app.use(
   views(__dirname + "/views", {

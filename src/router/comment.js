@@ -4,7 +4,7 @@
 const Router = require("koa-router")
 const router = new Router({ prefix: "/comment" })
 
-const { auth, adminAuth } = require("../middleware/auth/index")
+const { auth, needAdminAuthNotNeedSuper } = require("../middleware/auth/index")
 
 const { addComment, deleteComment, applyComment, thumbUpComment, cancelThumbUp, backGetCommentList, frontGetParentComment, frontGetChildrenComment, getCommentTotal } = require("../controller/comment/index")
 
@@ -24,7 +24,7 @@ router.put("/cancelThumbUp/:id", cancelThumbUp)
 router.delete("/delete/:id/:parent_id", auth, deleteComment)
 
 // 后台删除评论
-router.delete("/backDelete/:id/:parent_id", auth, adminAuth, deleteComment)
+router.delete("/backDelete/:id/:parent_id", auth, needAdminAuthNotNeedSuper, deleteComment)
 
 // 后台条件分页获取评论
 router.post("/backGetCommentList", backGetCommentList)

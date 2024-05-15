@@ -1,6 +1,6 @@
 const Config = require("../../model/config/config")
 /**
- * 分类服务层
+ * 网站设置服务层
  */
 class ConfigService {
   async updateConfig(config) {
@@ -29,13 +29,19 @@ class ConfigService {
 
   async addView() {
     let res = await Config.findAll()
-    let config
+    let flag = false,
+      config
     if (res.length) {
       config = await Config.findByPk(res[0].dataValues.id)
-      config.increment(["view_time"], { by: 1 })
+      if (config) {
+        config.increment(["view_time"], { by: 1 })
+        flag = "添加成功"
+      }
+    } else {
+      flag = "需要初始化"
     }
 
-    return config ? true : false
+    return flag
   }
 }
 

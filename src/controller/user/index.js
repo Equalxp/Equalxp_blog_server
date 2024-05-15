@@ -6,6 +6,8 @@ const errorCode = ERRORCODE.USER
 
 const { UPLOADTYPE } = require("../../config/config.default")
 const { deleteImgs } = require("../../utils/qiniuUpload")
+const { deleteOnlineImgs } = require("../utils/index")
+
 const { getIpAddress } = require("../../utils/tool")
 class userController {
   /**
@@ -38,8 +40,14 @@ class userController {
 
       let one = await getOneUserInfo({ id })
       // 服务器删除原来的头像
-      if (UPLOADTYPE == "qiniu" && one.avatar && one.avatar != avatar) {
-        await deleteImgs([one.avatar.split("/").pop()])
+      if (one.avatar && one.avatar != avatar) {
+        if (UPLOADTYPE == "qiniu") {
+          await deleteImgs([one.avatar.split("/").pop()])
+
+        }
+        if (UPLOADTYPE == 'online') {
+          await deleteOnlineImgs([one.avatar.split("/").pop()])
+        }
       }
 
       const res = await updateOwnUserInfo(id, ctx.request.body)
@@ -101,6 +109,8 @@ class userController {
             role: 1,
             id: 5201314,
           })
+        } else {
+          return ctx.app.emit("error", throwError(errorCode, "密码错误"), ctx)
         }
       } else {
         // 从返回的对象中剔除password属性，将剩下的属性放到res对象
@@ -152,7 +162,7 @@ class userController {
           })
         } else {
           let res = await getOneUserInfo({ id: ctx.params.id })
-          const { role, password, username, ip, ...resInfo } = res
+          const { password, username, ip, ...resInfo } = res
           const ipAddress = getIpAddress(ip)
           resInfo.ipAddress = ipAddress
           ctx.body = result("获取用户信息成功", resInfo)
@@ -175,8 +185,13 @@ class userController {
       const { id, avatar } = ctx.request.body
       let one = await getOneUserInfo({ id })
       // 服务器删除原来的头像
-      if (UPLOADTYPE == "qiniu" && one.avatar && one.avatar != avatar) {
-        await deleteImgs([one.avatar.split("/").pop()])
+      if (one.avatar && one.avatar != avatar) {
+        if (UPLOADTYPE == "qiniu") {
+          await deleteImgs([one.avatar.split("/").pop()])
+        }
+        if (UPLOADTYPE == 'online') {
+          await deleteOnlineImgs([one.avatar.split("/").pop()])
+        }
       }
 
       let res = await adminUpdateUserInfo(ctx.request.body)
