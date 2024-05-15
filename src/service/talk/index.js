@@ -206,6 +206,7 @@ class TalkService {
 
   // 根据id获取说说详情
   async getTalkById(id) {
+    let res = await Talk.findByPk(id)
 
     let imgs = await getPhotoByTalkId(id)
 

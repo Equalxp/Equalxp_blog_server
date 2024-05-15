@@ -1,9 +1,9 @@
 const { Op } = require("sequelize")
 const Message = require("../../model/message/message")
-
 const { getOneUserInfo } = require('../user/index')
 const { getIsLikeByIdAndType } = require("../like/index")
 const { getCommentTotal } = require('../comment/index')
+
 
 /**
  * 留言服务层
@@ -12,8 +12,9 @@ class MessageService {
   /**
    * 发布留言
    */
-  async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type, nick_name }) {
-    const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type, nick_name });
+  async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, tag, nick_name }) {
+
+    const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, tag, nick_name })
 
     return res ? true : false
   }
@@ -21,20 +22,21 @@ class MessageService {
   /**
    * 修改留言
    */
-  async updateMessage({ id, message, color, font_size, font_weight, bg_color, bg_url, type }) {
+  async updateMessage({ id, message, color, font_size, font_weight, bg_color, bg_url, tag }) {
     const res = await Message.update(
-      { message, color, font_size, font_weight, bg_color, bg_url, type },
+      { message, color, font_size, font_weight, bg_color, bg_url, tag },
       {
         where: {
           id
         }
       }
     )
+
     return res ? true : false
   }
 
   /**
-   * 根据id删除留言
+   * 根据id列表删除留言
    * @param {*} idList
    * @returns
    */
@@ -74,15 +76,16 @@ class MessageService {
     return message ? true : false
   }
 
+
   /**
    * 分页获取留言
    */
-  async getMessageList({ current, size, message, time, type, user_id }) {
+  async getMessageList({ current, size, message, time, tag, user_id }) {
     const offset = (current - 1) * size
     const limit = size * 1
     const whereOpt = {}
-    type && Object.assign(whereOpt, {
-      type
+    tag && Object.assign(whereOpt, {
+      tag
     })
     message &&
       Object.assign(whereOpt, {
@@ -155,6 +158,39 @@ class MessageService {
       total: count,
     }
   }
+
+  /**
+   * 获取热门的标签
+   */
+  async getMessageTag() {
+    let all = await Message.findAll()
+    let arr = []
+    if (all.length) {
+      all.forEach(v => {
+        if (v.dataValues.tag) {
+          let index = arr.findIndex(item => item.tag == v.dataValues.tag)
+          if (index == -1) {
+            arr.push({ tag: v.dataValues.tag, count: 1 })
+          } else {
+            arr[index].count++
+          }
+        }
+      })
+    }
+
+
+    for (let i = 0 i < arr.length i++) {
+      for (let j = i + 1 j < arr.length j++) {
+        if (arr[j].count > arr[i].count) {
+          let temp = arr[i]
+          arr[i] = arr[j]
+          arr[j] = temp
+        }
+      }
+    }
+
+    return arr.slice(0, 10)
+  }
 }
 
-
+module.exports = new MessageService()

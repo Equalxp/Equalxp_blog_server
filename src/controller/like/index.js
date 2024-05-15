@@ -63,15 +63,16 @@ class HeaderController {
       if (!for_id) {
         return ctx.app.emit("error", throwError(errorCode, "取消点赞对象不能为空"), ctx)
       }
-      let res
       if (!type) {
+        return ctx.app.emit("error", throwError(errorCode, "取消点赞类型不能为空"), ctx)
+      }
+      let res
+      if (!user_id) {
         res = false
       } else {
         res = await getIsLikeByIdAndType({ for_id, type, user_id })
       }
-      if (!user_id) {
-        return ctx.app.emit("error", throwError(errorCode, "取消点赞用户不能为空"), ctx)
-      }
+
 
       ctx.body = result("获取用户是否点赞成功", res)
     } catch (err) {

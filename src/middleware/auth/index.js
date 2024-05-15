@@ -34,10 +34,23 @@ const auth = async (ctx, next) => {
 }
 
 const adminAuth = async (ctx, next) => {
-  const { role } = ctx.state.user
+  const { role, username } = ctx.state.user
   if (Number(role) !== 1) {
     console.error("普通用户仅限查看")
     return ctx.app.emit("error", throwError(errorCode, "普通用户仅限查看"), ctx)
+  }
+  if (username == 'admin') {
+    console.error("admin是配置的用户，没有用户信息，建议注册账号再发布博客内容")
+    return ctx.app.emit("error", throwError(errorCode, "admin是配置的用户，没有用户信息，建议注册账号再发布博客内容"), ctx)
+  }
+  await next()
+}
+
+const isSuperAdmin = async (ctx, next) => {
+  const { username } = ctx.state.user
+  if (username == 'admin') {
+    console.error("管理员信息只可通过配置信息修改")
+    return ctx.app.emit("error", throwError(errorCode, "管理员信息只可通过配置信息修改"), ctx)
   }
   await next()
 }
@@ -45,4 +58,5 @@ const adminAuth = async (ctx, next) => {
 module.exports = {
   auth,
   adminAuth,
+  isSuperAdmin
 }

@@ -19,9 +19,9 @@ class HeaderController {
         }
       }
       if (id) {
-        const flag = await getOneByPath(route_name);
+        const flag = await getOneByPath(route_name)
         if (flag.id != id) {
-          return ctx.app.emit("error", throwError(errorCode, "已经存在相同的背景路径"), ctx);
+          return ctx.app.emit("error", throwError(errorCode, "已经存在相同的背景路径"), ctx)
         }
       }
       const res = await addOrUpdateHeader(ctx.request.body)

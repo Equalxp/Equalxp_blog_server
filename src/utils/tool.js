@@ -41,22 +41,21 @@ function getIpAddress(ip) {
 
 // 获取当前type类型数字的公共方法
 function getCurrentTypeName(type) {
-  let res = 0;
+  let res = 0
   switch (type + '') {
     case "1":
-      res = "文章";
-      break;
+      res = "文章"
+      break
     case "2":
-      res = "说说";
-      break;
+      res = "说说"
+      break
     case "3":
-      res = "留言";
-      break;
+      res = "留言"
+      break
   }
 
-  return res;
+  return res
 }
-
 // 判断网址是否带http / https
 function isValidUrl(url) {
   return url.indexOf('http') != -1 || url.indexOf('https') != -1

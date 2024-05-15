@@ -27,7 +27,7 @@ class CommentController {
           user_id: author_id,
           type: type,
           to_id: for_id,
-          message: `您的${getCurrentTypeName(type)}收到了来自于：${from_name} 的评论: ${content}！`
+          message: `您的${getCurrentTypeName(type)}收到了来自于：${from_name} 的评论: ${content}！`,
         })
       }
 
@@ -163,12 +163,12 @@ class CommentController {
   */
   async getCommentTotal(ctx) {
     try {
-      const { for_id, type } = ctx.request.body;
-      let res = await getCommentTotal({ for_id, type });
-      ctx.body = result("获取评论总条数成功", res);
+      const { for_id, type } = ctx.request.body
+      let res = await getCommentTotal({ for_id, type })
+      ctx.body = result("获取评论总条数成功", res)
     } catch (err) {
-      console.error(err);
-      return ctx.app.emit("error", throwError(errorCode, "获取评论总条数失败"), ctx);
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取评论总条数失败"), ctx)
     }
   }
 }

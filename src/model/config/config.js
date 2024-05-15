@@ -62,6 +62,7 @@ const Config = seq.define(
     view_time: {
       type: DataTypes.BIGINT,
       require: true,
+      defaultValue: 0,
       comment: "博客被访问的次数",
     },
     createdAt: {

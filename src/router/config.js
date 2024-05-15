@@ -2,6 +2,7 @@ const Router = require("koa-router")
 const router = new Router({ prefix: "/config" })
 
 const { auth, adminAuth } = require("../middleware/auth/index")
+const { verifyConfig } = require("../middleware/config/config")
 
 const { updateConfig, getConfig, addView } = require("../controller/utils/index")
 
@@ -9,9 +10,9 @@ const { updateConfig, getConfig, addView } = require("../controller/utils/index"
 router.post("/update", auth, adminAuth, updateConfig)
 
 // 获取网站设置
-router.get("/", getConfig)
+router.get("/", verifyConfig, getConfig)
 
 // 修改网站设置的访问次数
-router.put("/addView", addView)
+router.put("/addView", verifyConfig, addView)
 
 module.exports = router

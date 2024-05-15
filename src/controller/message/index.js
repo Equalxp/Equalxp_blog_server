@@ -1,13 +1,11 @@
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.MESSAGE
 
-const { addMessage, deleteMessage, getMessageList, updateMessage, likeMessage, cancelLikeMessage } = require("../../service/message/index");
-const { randomNickname } = require("../../utils/tool")
+const { addMessage, deleteMessage, getMessageList, updateMessage, likeMessage, cancelLikeMessage, getMessageTag } = require("../../service/message/index")
 const { addNotify } = require("../notify/index")
 
 const filterSensitive = require("../../utils/sensitive")
 const { randomNickname } = require("../../utils/tool")
-
 
 class MessageController {
   /**
@@ -15,7 +13,7 @@ class MessageController {
    */
   async addMessage(ctx) {
     try {
-      let { user_id, message, nick_name, ...rest } = ctx.request.body;
+      let { user_id, message, nick_name, ...rest } = ctx.request.body
       if (!user_id) {
         nick_name = randomNickname("游客", 5)
       }
@@ -23,7 +21,7 @@ class MessageController {
       message = await filterSensitive(message)
       const res = await addMessage({ nick_name, user_id, message, ...rest })
       // 发布消息推送
-      if (!user_id || userId != 1) {
+      if (user_id != 1) {
         await addNotify({
           user_id: 1,
           type: 3,
@@ -44,15 +42,15 @@ class MessageController {
    */
   async updateMessage(ctx) {
     try {
-      let { message } = ctx.request.body;
+      let { message } = ctx.request.body
 
-      message = await filterSensitive(message);
-      const res = await updateMessage(ctx.request.body);
+      message = await filterSensitive(message)
+      const res = await updateMessage(ctx.request.body)
 
-      ctx.body = result("修改成功", res);
+      ctx.body = result("修改成功", res)
     } catch (err) {
-      console.error(err);
-      return ctx.app.emit("error", throwError(errorCode, "修改失败"), ctx);
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "修改失败"), ctx)
     }
   }
 
@@ -72,16 +70,16 @@ class MessageController {
   }
 
   /**
- * 留言点赞
- */
+   * 留言点赞
+   */
   async likeMessage(ctx) {
     try {
-      const res = await likeMessage(ctx.params.id);
+      const res = await likeMessage(ctx.params.id)
 
-      ctx.body = result("留言点赞成功", res);
+      ctx.body = result("留言点赞成功", res)
     } catch (err) {
-      console.error(err);
-      return ctx.app.emit("error", throwError(errorCode, "留言点赞失败"), ctx);
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "留言点赞失败"), ctx)
     }
   }
 
@@ -90,12 +88,12 @@ class MessageController {
    */
   async cancelLikeMessage(ctx) {
     try {
-      const res = await cancelLikeMessage(ctx.params.id);
+      const res = await cancelLikeMessage(ctx.params.id)
 
-      ctx.body = result("取消留言点赞成功", res);
+      ctx.body = result("取消留言点赞成功", res)
     } catch (err) {
-      console.error(err);
-      return ctx.app.emit("error", throwError(errorCode, "取消留言点赞失败"), ctx);
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "取消留言点赞失败"), ctx)
     }
   }
 
@@ -108,6 +106,20 @@ class MessageController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "分页获取留言失败"), ctx)
+    }
+  }
+
+  /**
+   * 获取热门标签
+   * @param {*} ctx 
+   */
+  async getMessageTag(ctx) {
+    try {
+      const res = await getMessageTag()
+      ctx.body = result("获取留言所有标签成功", res)
+    } catch (err) {
+      console.error(err)
+      return ctx.app.emit("error", throwError(errorCode, "获取留言所有标签失败"), ctx)
     }
   }
 }
