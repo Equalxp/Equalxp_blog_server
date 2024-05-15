@@ -3,6 +3,7 @@ const Message = require("../../model/message/message")
 
 const { getOneUserInfo } = require('../user/index')
 const { getIsLikeByIdAndType } = require("../like/index")
+const { getCommentTotal } = require('../comment/index')
 
 /**
  * 留言服务层
@@ -11,8 +12,8 @@ class MessageService {
   /**
    * 发布留言
    */
-  async addMessage({ message, color, font_size, bg_color, bg_url, user_id, type }) {
-    const res = await Message.create({ message, color, font_size, bg_color, bg_url, user_id, type })
+  async addMessage({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type }) {
+    const res = await Message.create({ message, color, font_size, font_weight, bg_color, bg_url, user_id, type })
 
     return res ? true : false
   }
@@ -20,9 +21,9 @@ class MessageService {
   /**
    * 修改留言
    */
-  async updateMessage({ id, message, color, font_size, bg_color, bg_url, type }) {
+  async updateMessage({ id, message, color, font_size, font_weight, bg_color, bg_url, type }) {
     const res = await Message.update(
-      { message, color, font_size, bg_color, bg_url, type },
+      { message, color, font_size, font_weight, bg_color, bg_url, type },
       {
         where: {
           id
@@ -52,12 +53,12 @@ class MessageService {
    * @param { id }
    */
   async likeMessage(id) {
-    let message = await Message.findByPk(id);
+    let message = await Message.findByPk(id)
     if (message) {
-      await message.increment("like_times", { by: 1 });
+      await message.increment("like_times", { by: 1 })
     }
 
-    return message ? true : false;
+    return message ? true : false
   }
 
   /**
@@ -65,12 +66,12 @@ class MessageService {
    * @param { id }
    */
   async cancelLikeMessage(id) {
-    let message = await Message.findByPk(id);
+    let message = await Message.findByPk(id)
     if (message) {
-      await message.decrement("like_times", { by: 1 });
+      await message.decrement("like_times", { by: 1 })
     }
 
-    return message ? true : false;
+    return message ? true : false
   }
 
   /**
@@ -104,31 +105,42 @@ class MessageService {
 
     // 根据用户form_id获取用户当前的昵称和头像
     const promiseList = rows.map(async (row) => {
-      let res;
-      res = await getOneUserInfo({ id: row.user_id });
-      return res;
-    });
+      let res
+      res = await getOneUserInfo({ id: row.user_id })
+      return res
+    })
 
     await Promise.all(promiseList).then((result) => {
       result.forEach((r, index) => {
         if (r) {
-          rows[index].dataValues.nick_name = r.nick_name;
-          rows[index].dataValues.avatar = r.avatar;
+          rows[index].dataValues.nick_name = r.nick_name
+          rows[index].dataValues.avatar = r.avatar
         }
-      });
-    });
+      })
+    })
 
     // 判断当前登录用户是否点赞了
     if (user_id) {
       const promiseLikeList = rows.map((row) => {
-        return getIsLikeByIdAndType({ for_id: row.id, type: 3, user_id });
-      });
+        return getIsLikeByIdAndType({ for_id: row.id, type: 3, user_id })
+      })
       await Promise.all(promiseLikeList).then((result) => {
         result.forEach((r, index) => {
-          rows[index].dataValues.is_like = r;
-        });
-      });
+          rows[index].dataValues.is_like = r
+        })
+      })
     }
+
+    // 获取每一条的评论条数
+    const promiseCommentList = rows.map((row) => {
+      return getCommentTotal({ for_id: row.id, type: 3 })
+    })
+    await Promise.all(promiseCommentList).then((result) => {
+      result.forEach((r, index) => {
+        console.log(r)
+        rows[index].dataValues.comment_total = r
+      })
+    })
 
     return {
       current,

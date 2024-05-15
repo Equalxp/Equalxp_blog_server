@@ -6,7 +6,7 @@ const router = new Router({ prefix: "/comment" })
 
 const { auth, adminAuth } = require("../middleware/auth/index")
 
-const { addComment, deleteComment, applyComment, thumbUpComment, cancelThumbUp, backGetCommentList, frontGetParentComment, frontGetChildrenComment } = require("../controller/comment/index")
+const { addComment, deleteComment, applyComment, thumbUpComment, cancelThumbUp, backGetCommentList, frontGetParentComment, frontGetChildrenComment, getCommentTotal } = require("../controller/comment/index")
 
 // 新增评论
 router.post("/add", addComment)
@@ -34,5 +34,8 @@ router.post("/frontGetParentComment", frontGetParentComment)
 
 // 前台分页获取子评论
 router.post("/frontGetChildrenComment", frontGetChildrenComment)
+
+// 获取关于当前的评论总数 子评论 + 父评论
+router.post("/getCommentTotal", getCommentTotal)
 
 module.exports = router

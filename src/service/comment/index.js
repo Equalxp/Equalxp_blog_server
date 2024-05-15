@@ -319,6 +319,18 @@ class CommentService {
       list: rows,
     }
   }
+
+  // 根据 评论类型 和 类型对应的id获取评论总数
+  async getCommentTotal({ for_id, type }) {
+    const res = await Comment.count({
+      where: {
+        for_id,
+        type
+      }
+    })
+
+    return res
+  }
 }
 
 module.exports = new CommentService()

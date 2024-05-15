@@ -39,7 +39,26 @@ function getIpAddress(ip) {
   return arr[1] || arr[0]
 }
 
+// 获取当前type类型数字的公共方法
+function getCurrentTypeName(type) {
+  let res = 0;
+  switch (type + '') {
+    case "1":
+      res = "文章";
+      break;
+    case "2":
+      res = "说说";
+      break;
+    case "3":
+      res = "留言";
+      break;
+  }
+
+  return res;
+}
+
 module.exports = {
   getIpAddress,
   randomNickname,
+  getCurrentTypeName
 }

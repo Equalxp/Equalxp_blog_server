@@ -58,6 +58,9 @@ class userController {
     try {
       const { password1 } = ctx.request.body
       const { id } = ctx.state.user
+      if (id == 2) {
+        return ctx.app.emit("error", throwError(errorCode, "测试用户密码不可以修改哦"), ctx);
+      }
       const res = await updatePassword(id, password1)
 
       ctx.body = result("修改用户密码成功", res)

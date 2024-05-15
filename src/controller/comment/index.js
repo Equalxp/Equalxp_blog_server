@@ -1,8 +1,8 @@
-const { createComment, applyComment, thumbUpComment, cancelThumbUp, deleteComment, backGetCommentList, frontGetParentComment, frontGetChildrenComment } = require("../../service/comment/index")
-
+const { createComment, applyComment, thumbUpComment, cancelThumbUp, deleteComment, backGetCommentList, frontGetParentComment, frontGetChildrenComment, getCommentTotal } = require("../../service/comment/index")
 const { result, ERRORCODE, throwError } = require("../../result/index")
 const errorCode = ERRORCODE.CATEGORY
 const { addNotify } = require("../notify/index")
+const { getCurrentTypeName } = require("../../utils/tool")
 
 const filterSensitive = require("../../utils/sensitive")
 
@@ -27,7 +27,7 @@ class CommentController {
           user_id: author_id,
           type: type,
           to_id: for_id,
-          message: `您的${type == 1 ? "文章" : "说说"}收到了来自于：${from_name} 的评论: ${content}！`,
+          message: `您的${getCurrentTypeName(type)}收到了来自于：${from_name} 的评论: ${content}！`
         })
       }
 
@@ -155,6 +155,20 @@ class CommentController {
     } catch (err) {
       console.error(err)
       return ctx.app.emit("error", throwError(errorCode, "分页查找子评论失败"), ctx)
+    }
+  }
+
+  /**
+  * 获取当前评论的总条数
+  */
+  async getCommentTotal(ctx) {
+    try {
+      const { for_id, type } = ctx.request.body;
+      let res = await getCommentTotal({ for_id, type });
+      ctx.body = result("获取评论总条数成功", res);
+    } catch (err) {
+      console.error(err);
+      return ctx.app.emit("error", throwError(errorCode, "获取评论总条数失败"), ctx);
     }
   }
 }

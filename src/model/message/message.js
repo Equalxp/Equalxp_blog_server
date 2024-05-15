@@ -22,6 +22,11 @@ const Message = seq.define(
       comment: "字体大小",
       defaultValue: 12,
     },
+    font_weight: {
+      type: DataTypes.INTEGER, // STRING 默认255
+      comment: "字体宽度",
+      defaultValue: 500,
+    },
     bg_color: {
       type: DataTypes.STRING, // STRING 默认255
       comment: "背景颜色",
