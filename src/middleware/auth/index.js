@@ -57,7 +57,6 @@ const needAdminAuth = async (ctx, next) => {
   await next()
 }
 
-// 超级管理员信息
 const isSuperAdmin = async (ctx, next) => {
   const { username } = ctx.state.user
   if (username == 'admin') {
