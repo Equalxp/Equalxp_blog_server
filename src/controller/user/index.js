@@ -159,6 +159,7 @@ class userController {
             id: 5201314,
             role: 1,
             nick_name: '超级管理员',
+            avatar: 'http://sdd24x2x2.hn-bkt.clouddn.com/super_admin_avatar.png'
           })
         } else {
           let res = await getOneUserInfo({ id: ctx.params.id })
