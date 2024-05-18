@@ -84,7 +84,7 @@ router.post("/getArticleList", auth, getArticleList)
 
 /** 前台 start */
 // 分页获取文章 按照置顶和发布时间倒序排序
-router.get("/blogHomeGetArticleList/:current/:size/:author_id", blogHomeGetArticleList)
+router.get("/blogHomeGetArticleList/:current/:size", blogHomeGetArticleList)
 
 // 分页获取时间轴信息
 router.get("/blogTimelineGetArticleList/:current/:size", blogTimelineGetArticleList)
