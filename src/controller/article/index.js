@@ -226,9 +226,9 @@ class ArticleController {
    */
   async blogHomeGetArticleList(ctx) {
     try {
-      const { current, size } = ctx.params
+      const { current, size, author_id } = ctx.params
 
-      let res = await blogHomeGetArticleList(current, size)
+      let res = await blogHomeGetArticleList(current, size, author_id)
       ctx.body = result("获取文章列表成功", res)
     } catch (err) {
       console.error(err)

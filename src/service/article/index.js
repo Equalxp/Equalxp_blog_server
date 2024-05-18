@@ -193,11 +193,16 @@ class ArticleService {
    */
   async getArticleList(param) {
     // 当前页 分页大小       文章标题      是否置顶  状态    标签id   分类id       创建时间
-    const { current, size, article_title, is_top, status, tag_id, category_id, create_time } = param
+    // author_id 作者
+    const { current, size, article_title, is_top, status, tag_id, category_id, create_time, author_id } = param
+    console.log('123123', author_id);
     const offset = (current - 1) * size
     const limit = size * 1
 
-    const whereOpt = {}
+    // 查询条件对象
+    const whereOpt = {
+      author_id: author_id
+    }
     let articleIdList = []
 
     article_title &&
@@ -233,6 +238,7 @@ class ArticleService {
       where: whereOpt,
       attributes: { exclude: ["article_content", "origin_url"] },
       order: [["createdAt", "DESC"]],
+      // 
     })
 
     // 根据文章id获取文章各自的标签名称列表 和 分类名称
@@ -290,8 +296,10 @@ class ArticleService {
    * 博客前台获取文章列表
    * @param {*} current 当前页
    * @param {*} size 分页大小
+   * @param {*} author_id 作者
    */
-  async blogHomeGetArticleList(current, size) {
+  // 前端传 author_id
+  async blogHomeGetArticleList(current, size, author_id) {
     const offset = (current - 1) * size
     const limit = size * 1
 
@@ -305,6 +313,7 @@ class ArticleService {
       offset,
       where: {
         status: 1,
+        author_id: author_id,
       },
     })
     let promiseList = []
